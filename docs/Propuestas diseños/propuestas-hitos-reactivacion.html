@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuestas — Hitos de Reactivación</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(135deg, #ffffff 0%, #ece9f7 45%, #d4d9e8 100%);
+  background-attachment: fixed;
+  padding: 28px;
+  color: #0b0b0b;
+}
+h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.note { font-size: 13px; color: #52514e; margin-bottom: 24px; }
+.props { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 22px; max-width: 1640px; }
+.prop-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+  background: #001740; color: #fff; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px;
+}
+.prop-label b { color: #ffd9a8; }
+.prop-desc { font-size: 12px; color: #52514e; margin-bottom: 10px; min-height: 32px; }
+
+.card {
+  background: rgba(255,255,255,.82); border: 1px solid #e8eaed; border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 12px 26px -10px rgba(16,24,40,.22);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  min-height: 430px;
+}
+.chead { padding-bottom: 10px; border-bottom: 1px solid #e8eaed; }
+.chead h3 { font-size: 16.5px; font-weight: 600; color: #13242B; line-height: 1.25; }
+.chead p { font-size: 13px; color: #42565E; margin-top: 2px; }
+
+/* fila base (estilo actual) */
+.hrow { display: flex; align-items: center; gap: 13px; padding: 10px 10px; border-radius: 12px; transition: background .15s; }
+.hrow:hover { background: rgba(42,120,214,.06); }
+.hicon {
+  width: 42px; height: 42px; border-radius: 12px; flex: none;
+  background: var(--tile); display: flex; align-items: center; justify-content: center;
+}
+.hicon svg { width: 20px; height: 20px; stroke: var(--ic); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ht { font-size: 13.5px; font-weight: 700; color: #13242B; }
+.hs { font-size: 12px; color: #7f92b8; margin-top: 1px; }
+.hmoney { font-size: 12px; font-weight: 700; color: #0f766e; margin-top: 2px; }
+.hval { margin-left: auto; text-align: right; flex: none; }
+.hval b { display: block; font-size: 20px; font-weight: 800; color: #13242B; line-height: 1.1; }
+.hval span { font-size: 10.5px; color: #7f92b8; font-weight: 600; }
+
+/* P2: timeline conectado */
+.tl { position: relative; display: flex; flex-direction: column; gap: 0; flex: 1; justify-content: space-between; }
+.tl::before { content: ''; position: absolute; left: 30px; top: 28px; bottom: 28px; width: 2px; background: #e2e8f0; }
+.tl .hrow { position: relative; padding: 13px 10px; }
+.tl .hicon { box-shadow: 0 0 0 4px rgba(255,255,255,.95); z-index: 1; }
+
+/* P3: barra de flujo */
+.flowbar { display: flex; height: 14px; gap: 2px; border-radius: 0; overflow: hidden; margin-top: 2px; }
+.flowbar i { display: block; height: 100%; }
+.flowlbl { display: flex; justify-content: space-between; font-size: 10.5px; color: #7f92b8; font-weight: 600; margin-top: 5px; margin-bottom: 6px; }
+
+/* P4: resumen al pie */
+.footsum {
+  margin-top: auto; background: linear-gradient(120deg, #001740, #0a3a86); border-radius: 9px;
+  color: #fff; padding: 12px 15px; display: flex; gap: 18px; align-items: center;
+}
+.footsum .fs-item { flex: 1; }
+.footsum .fs-v { font-size: 19px; font-weight: 800; line-height: 1.15; }
+.footsum .fs-l { font-size: 10.5px; color: #9fc0ff; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.footsum .div { width: 1px; align-self: stretch; background: rgba(255,255,255,.2); }
+
+/* P5: filas generosas */
+.big .hrow { padding: 16px 12px; }
+.big .hicon { width: 52px; height: 52px; border-radius: 14px; }
+.big .hicon svg { width: 25px; height: 25px; }
+.big .ht { font-size: 15px; }
+.big .hs { font-size: 12.5px; }
+.big .hval b { font-size: 26px; }
+</style>
+</head>
+<body>
+<h1>Propuestas — Tarjeta "Hitos de reactivación"</h1>
+<p class="note">Datos reales del Excel: obras y monto de inversión por etapa (suman 243 obras · S/ 8,549 mlls). Pasa el cursor por las filas para ver el hover.</p>
+
+<div class="props">
+
+  <!-- ============ PROPUESTA 1 ============ -->
+  <div>
+    <span class="prop-label">Propuesta <b>1</b> · Inversión atrapada por etapa</span>
+    <p class="prop-desc">Cada fila suma el monto de inversión detenido en esa etapa (en teal). El dato ejecutivo clave: dónde está la plata.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe · inversión comprometida</p></div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;justify-content:center">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">20 meses promedio</div><div class="hmoney">S/ 531.3 mlls. de inversión</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">23 meses promedio</div><div class="hmoney">S/ 1,128.2 mlls. de inversión</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">18 meses promedio</div><div class="hmoney">S/ 5,370.4 mlls. de inversión</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">9 meses promedio</div><div class="hmoney">S/ 1,519.4 mlls. de inversión</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROPUESTA 2 ============ -->
+  <div>
+    <span class="prop-label">Propuesta <b>2</b> · Timeline de proceso conectado</span>
+    <p class="prop-desc">Línea vertical que conecta las etapas (como el timeline de tu guía): comunica que es un flujo secuencial. Incluye montos.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>flujo del proceso de destrabe · de diagnóstico a reactivación</p></div>
+      <div class="tl">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">1 · Diagnóstico</div><div class="hs">20 meses prom. · S/ 531 mlls.</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">2 · Informe de estado situacional</div><div class="hs">23 meses prom. · S/ 1,128 mlls.</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">3 · E.T. saldo de obra</div><div class="hs">18 meses prom. · S/ 5,370 mlls.</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">4 · Proceso de selección</div><div class="hs">9 meses prom. · S/ 1,519 mlls.</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#dcfce7;--ic:#15803d">
+          <div class="hicon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div><div class="ht">Reactivada</div><div class="hs">fin del proceso de destrabe</div></div>
+          <div class="hval"><b>→</b><span>meta</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROPUESTA 3 ============ -->
+  <div>
+    <span class="prop-label">Propuesta <b>3</b> · Barra de flujo + lista</span>
+    <p class="prop-desc">Una barra apilada arriba muestra dónde se concentra el atasco (48% en E.T.); abajo la lista actual.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div>
+        <div class="flowbar">
+          <i style="width:4.1%;background:#1d4ed8"></i>
+          <i style="width:33.3%;background:#0284c7"></i>
+          <i style="width:48.1%;background:#0f766e"></i>
+          <i style="width:14.4%;background:#d97706"></i>
+        </div>
+        <div class="flowlbl"><span>Diagnóstico 4%</span><span>Informe 33%</span><span>E.T. 48%</span><span>Selección 14%</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;justify-content:center">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">20 meses promedio</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">23 meses promedio</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">18 meses promedio</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">9 meses promedio</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROPUESTA 4 ============ -->
+  <div>
+    <span class="prop-label">Propuesta <b>4</b> · Lista + resumen ejecutivo al pie</span>
+    <p class="prop-desc">La lista actual, y el espacio sobrante se cierra con una franja azul marino con los datos agregados del proceso.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">20 meses promedio</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">23 meses promedio</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">18 meses promedio</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">9 meses promedio</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROPUESTA 5 ============ -->
+  <div>
+    <span class="prop-label">Propuesta <b>5</b> · Filas generosas</span>
+    <p class="prop-desc">Sin datos nuevos: filas más altas, íconos y números más grandes. El espacio se convierte en respiración.</p>
+    <div class="card big">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;justify-content:center">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">20 meses promedio</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">23 meses promedio</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">18 meses promedio</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">9 meses promedio</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* ===== Ronda 2 ===== */
+.r2-sep { max-width: 1640px; margin: 34px 0 18px; }
+.r2-sep h2 { font-size: 17px; font-weight: 800; }
+.r2-sep p { font-size: 12.5px; color: #52514e; }
+
+/* P6: rank bars */
+.rk { display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: center; }
+.rk-row { display: flex; flex-direction: column; gap: 6px; }
+.rk-top { display: flex; align-items: baseline; gap: 8px; }
+.rk-top .nm { font-size: 13.5px; font-weight: 700; color: #13242B; }
+.rk-top .ms { font-size: 11.5px; color: #7f92b8; font-weight: 600; }
+.rk-top .vv { margin-left: auto; font-size: 15px; font-weight: 800; color: #13242B; }
+.rk-top .vv small { font-size: 10.5px; color: #7f92b8; font-weight: 600; margin-left: 2px; }
+.rk-bar { height: 8px; background: #eef1f5; border-radius: 5px; overflow: hidden; }
+.rk-bar i { display: block; height: 100%; border-radius: 5px; }
+
+/* P7: gauge */
+.gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+.gauge-lg { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+.glg { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #42565E;
+  background: #f2f4f8; border-radius: 999px; padding: 4px 11px; }
+.glg i { width: 8px; height: 8px; border-radius: 50%; }
+.gfoot { display: flex; gap: 0; width: 100%; border-top: 1px solid #edeef2; margin-top: 8px; padding-top: 12px; }
+.gfoot > div { flex: 1; text-align: center; }
+.gfoot b { display: block; font-size: 17px; font-weight: 800; color: #13242B; }
+.gfoot span { font-size: 10px; color: #7f92b8; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
+/* P8: funnel */
+.fnl { display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center; }
+.fnl-row { display: flex; align-items: center; gap: 10px; }
+.fnl-bar { height: 44px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  color: #fff; margin: 0 auto; min-width: 120px; box-shadow: 0 6px 14px -6px rgba(0,23,64,.35);
+  flex-direction: column; line-height: 1.15; }
+.fnl-bar b { font-size: 16px; font-weight: 800; }
+.fnl-bar span { font-size: 10px; font-weight: 700; opacity: .85; text-transform: uppercase; letter-spacing: .05em; }
+.fnl-meta { text-align: center; font-size: 11px; color: #7f92b8; font-weight: 600; margin-top: -3px; }
+
+/* P9: mosaico */
+.mz { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; flex: 1; }
+.mz-tile { border-radius: 13px; padding: 14px 15px; display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+.mz-tile .num { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+.mz-tile .nm { font-size: 12px; font-weight: 700; line-height: 1.25; }
+.mz-tile .chip { align-self: flex-start; font-size: 10px; font-weight: 800; border-radius: 999px; padding: 2px 8px; background: rgba(255,255,255,.65); margin-top: 2px; }
+.mz-tile .shr { margin-top: auto; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); overflow: hidden; }
+.mz-tile .shr i { display: block; height: 100%; border-radius: 3px; }
+
+/* P10: anillos */
+.rings { display: flex; align-items: center; gap: 14px; flex: 1; }
+.rings svg { flex: none; }
+.ring-lg { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.rlg { display: flex; align-items: center; gap: 9px; }
+.rlg i { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.rlg .nm { font-size: 12.5px; font-weight: 700; color: #13242B; flex: 1; line-height: 1.2; }
+.rlg .nm small { display: block; font-weight: 600; color: #7f92b8; font-size: 10.5px; }
+.rlg b { font-size: 15px; font-weight: 800; color: #13242B; }
+
+/* P11: tabla ejecutiva */
+.xtb { width: 100%; border-collapse: collapse; flex: 1; }
+.xtb th { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #7f92b8;
+  text-align: right; padding: 8px 10px; border-bottom: 1.5px solid #e8eaed; }
+.xtb th:first-child { text-align: left; }
+.xtb td { padding: 12px 10px; font-size: 13px; text-align: right; border-bottom: 1px solid #f0f1f4; color: #13242B; font-weight: 700; }
+.xtb td:first-child { text-align: left; }
+.xtb .stg { display: flex; align-items: center; gap: 9px; font-weight: 700; }
+.xtb .stg i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.xtb .muted { color: #7f92b8; font-weight: 600; font-size: 12px; }
+.xtb tr.tot td { border-bottom: none; background: #f6f8fb; font-weight: 800; }
+.xtb tr.tot td:first-child { border-radius: 9px 0 0 9px; }
+.xtb tr.tot td:last-child { border-radius: 0 9px 9px 0; }
+
+/* P12: stepper horizontal */
+.stp { display: flex; flex-direction: column; gap: 18px; flex: 1; justify-content: center; }
+.stp-track { display: flex; align-items: flex-start; position: relative; }
+.stp-track::before { content: ''; position: absolute; top: 17px; left: 12%; right: 12%; height: 2px; background: #e5e9f0; }
+.stp-node { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
+.stp-dot { width: 36px; height: 36px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 5px #fff; }
+.stp-node .nb { font-size: 19px; font-weight: 800; color: #13242B; line-height: 1; }
+.stp-node .nl { font-size: 10px; font-weight: 700; color: #7f92b8; text-align: center; line-height: 1.25; max-width: 82px; }
+.stp-stack { height: 12px; display: flex; gap: 2px; border-radius: 7px; overflow: hidden; }
+.stp-stack i { height: 100%; }
+.stp-mini { display: flex; justify-content: space-between; font-size: 10.5px; color: #7f92b8; font-weight: 700; }
+
+/* P13: dark premium */
+.card.dark { background: linear-gradient(150deg, #001740 0%, #002b69 70%, #0a3a86 100%); border: none; }
+.card.dark .chead { border-bottom-color: rgba(255,255,255,.14); }
+.card.dark .chead h3 { color: #fff; }
+.card.dark .chead p { color: #9fc0ff; }
+.dkl { display: flex; flex-direction: column; flex: 1; justify-content: space-between; position: relative; }
+.dkl::before { content: ''; position: absolute; left: 7px; top: 22px; bottom: 22px; width: 2px;
+  background: linear-gradient(180deg, #3b82f6, #22d3ee, #34d399, #fbbf24); opacity: .5; }
+.dkr { display: flex; align-items: center; gap: 13px; padding: 8px 0 8px 0; position: relative; }
+.dkr .dot { width: 16px; height: 16px; border-radius: 50%; flex: none; position: relative; z-index: 1;
+  box-shadow: 0 0 12px 2px var(--glow); background: var(--dc); border: 3px solid #001d4d; }
+.dkr .tx { flex: 1; min-width: 0; }
+.dkr .tx .t1 { font-size: 13px; font-weight: 700; color: #fff; }
+.dkr .tx .t2 { font-size: 11px; color: #9fc0ff; margin-top: 1px; }
+.dkr .vv { text-align: right; }
+.dkr .vv b { display: block; font-size: 20px; font-weight: 800; color: #fff; line-height: 1.05; }
+.dkr .vv span { font-size: 10px; color: #9fc0ff; font-weight: 700; }
+</style>
+
+<div class="r2-sep">
+  <h2>Ronda 2 — propuestas que cubren toda la tarjeta</h2>
+  <p>Ocho enfoques distintos, cada uno diseñado para llenar el alto completo del espacio disponible.</p>
+</div>
+
+<div class="props">
+
+  <!-- P6 -->
+  <div>
+    <span class="prop-label">Propuesta <b>6</b> · Barras de participación</span>
+    <p class="prop-desc">Patrón "top items" de analytics: cada etapa con su barra de participación sobre el total. Limpio y ejecutivo.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="rk">
+        <div class="rk-row">
+          <div class="rk-top"><span class="nm">Diagnóstico</span><span class="ms">20 meses prom.</span><span class="vv">10<small>obras · 4%</small></span></div>
+          <div class="rk-bar"><i style="width:4.1%;background:#1d4ed8"></i></div>
+        </div>
+        <div class="rk-row">
+          <div class="rk-top"><span class="nm">Informe de estado situacional</span><span class="ms">23 meses</span><span class="vv">81<small>obras · 33%</small></span></div>
+          <div class="rk-bar"><i style="width:33.3%;background:#0284c7"></i></div>
+        </div>
+        <div class="rk-row">
+          <div class="rk-top"><span class="nm">E.T. saldo de obra</span><span class="ms">18 meses</span><span class="vv">117<small>obras · 48%</small></span></div>
+          <div class="rk-bar"><i style="width:48.1%;background:#0f766e"></i></div>
+        </div>
+        <div class="rk-row">
+          <div class="rk-top"><span class="nm">Proceso de selección</span><span class="ms">9 meses</span><span class="vv">35<small>obras · 14%</small></span></div>
+          <div class="rk-bar"><i style="width:14.4%;background:#d97706"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P7 -->
+  <div>
+    <span class="prop-label">Propuesta <b>7</b> · Gauge semicircular</span>
+    <p class="prop-desc">Medidor segmentado por etapa con el total al centro, chips de leyenda y pie con métricas — llena el alto con jerarquía.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>distribución del proceso de destrabe</p></div>
+      <div class="gauge-wrap">
+        <svg width="220" height="125" viewBox="0 0 220 125">
+          <path d="M20,110 A90,90 0 0 1 20.8,98.4" stroke="#1d4ed8" stroke-width="17" fill="none"/>
+          <path d="M20.8,98.4 A90,90 0 0 1 75.4,26.9" stroke="#0284c7" stroke-width="17" fill="none"/>
+          <path d="M75.4,26.9 A90,90 0 0 1 190.9,70.5" stroke="#0f766e" stroke-width="17" fill="none"/>
+          <path d="M190.9,70.5 A90,90 0 0 1 200,110" stroke="#d97706" stroke-width="17" fill="none"/>
+          <text x="110" y="92" text-anchor="middle" font-size="30" font-weight="800" fill="#13242B" font-family="Hanken Grotesk">243</text>
+          <text x="110" y="110" text-anchor="middle" font-size="11" fill="#7f92b8" font-weight="600" font-family="Hanken Grotesk">obras en proceso</text>
+        </svg>
+        <div class="gauge-lg">
+          <span class="glg"><i style="background:#1d4ed8"></i>Diagnóstico 10</span>
+          <span class="glg"><i style="background:#0284c7"></i>Informe 81</span>
+          <span class="glg"><i style="background:#0f766e"></i>E.T. 117</span>
+          <span class="glg"><i style="background:#d97706"></i>Selección 35</span>
+        </div>
+        <div class="gfoot">
+          <div><b>~70</b><span>meses proceso</span></div>
+          <div><b>48%</b><span>en E.T.</span></div>
+          <div><b>S/ 8,549</b><span>mlls. en juego</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P8 -->
+  <div>
+    <span class="prop-label">Propuesta <b>8</b> · Embudo del proceso</span>
+    <p class="prop-desc">El clásico funnel: el ancho de cada bloque es proporcional a sus obras. Se lee al instante dónde se acumula el proceso.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>flujo del proceso de destrabe</p></div>
+      <div class="fnl">
+        <div class="fnl-bar" style="width:24%;background:linear-gradient(135deg,#1d4ed8,#3b82f6)"><b>10</b><span>Diagnóstico</span></div>
+        <div class="fnl-meta">20 meses promedio</div>
+        <div class="fnl-bar" style="width:66%;background:linear-gradient(135deg,#0284c7,#38bdf8)"><b>81</b><span>Informe situacional</span></div>
+        <div class="fnl-meta">23 meses promedio</div>
+        <div class="fnl-bar" style="width:92%;background:linear-gradient(135deg,#0f766e,#14b8a6)"><b>117</b><span>E.T. saldo de obra</span></div>
+        <div class="fnl-meta">18 meses promedio</div>
+        <div class="fnl-bar" style="width:36%;background:linear-gradient(135deg,#d97706,#fbbf24)"><b>35</b><span>Proceso de selección</span></div>
+        <div class="fnl-meta">9 meses promedio</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P9 -->
+  <div>
+    <span class="prop-label">Propuesta <b>9</b> · Mosaico 2×2</span>
+    <p class="prop-desc">Cuatro cuadrantes pastel, uno por etapa: número protagonista, chip de meses y barra de participación. Cubre el 100% del área.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="mz">
+        <div class="mz-tile" style="background:#dbeafe;color:#1e3a8a">
+          <span class="num">10</span><span class="nm">Diagnóstico</span>
+          <span class="chip">⏱ 20 meses</span>
+          <div class="shr"><i style="width:4.1%;background:#1d4ed8"></i></div>
+        </div>
+        <div class="mz-tile" style="background:#e0f2fe;color:#075985">
+          <span class="num">81</span><span class="nm">Informe de estado situacional</span>
+          <span class="chip">⏱ 23 meses</span>
+          <div class="shr"><i style="width:33.3%;background:#0284c7"></i></div>
+        </div>
+        <div class="mz-tile" style="background:#ccfbf1;color:#134e4a">
+          <span class="num">117</span><span class="nm">E.T. saldo de obra</span>
+          <span class="chip">⏱ 18 meses</span>
+          <div class="shr"><i style="width:48.1%;background:#0f766e"></i></div>
+        </div>
+        <div class="mz-tile" style="background:#fef3c7;color:#78350f">
+          <span class="num">35</span><span class="nm">Proceso de selección</span>
+          <span class="chip">⏱ 9 meses</span>
+          <div class="shr"><i style="width:14.4%;background:#d97706"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P10 -->
+  <div>
+    <span class="prop-label">Propuesta <b>10</b> · Anillos de actividad</span>
+    <p class="prop-desc">Anillos concéntricos (estilo Apple Watch): cada anillo es la participación de una etapa. Moderno y muy visual.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>participación por etapa del total en proceso</p></div>
+      <div class="rings">
+        <svg width="185" height="185" viewBox="0 0 185 185">
+          <g transform="rotate(-90 92.5 92.5)">
+            <circle cx="92.5" cy="92.5" r="78" stroke="#eef1f5" stroke-width="11" fill="none"/>
+            <circle cx="92.5" cy="92.5" r="78" stroke="#1d4ed8" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="20 470"/>
+            <circle cx="92.5" cy="92.5" r="62" stroke="#eef1f5" stroke-width="11" fill="none"/>
+            <circle cx="92.5" cy="92.5" r="62" stroke="#0284c7" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="130 260"/>
+            <circle cx="92.5" cy="92.5" r="46" stroke="#eef1f5" stroke-width="11" fill="none"/>
+            <circle cx="92.5" cy="92.5" r="46" stroke="#0f766e" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="139 150"/>
+            <circle cx="92.5" cy="92.5" r="30" stroke="#eef1f5" stroke-width="11" fill="none"/>
+            <circle cx="92.5" cy="92.5" r="30" stroke="#d97706" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="27 161"/>
+          </g>
+          <text x="92.5" y="89" text-anchor="middle" font-size="21" font-weight="800" fill="#13242B" font-family="Hanken Grotesk">243</text>
+          <text x="92.5" y="104" text-anchor="middle" font-size="9.5" fill="#7f92b8" font-weight="600" font-family="Hanken Grotesk">obras</text>
+        </svg>
+        <div class="ring-lg">
+          <div class="rlg"><i style="background:#1d4ed8"></i><span class="nm">Diagnóstico<small>20 meses prom.</small></span><b>10</b></div>
+          <div class="rlg"><i style="background:#0284c7"></i><span class="nm">Informe situacional<small>23 meses prom.</small></span><b>81</b></div>
+          <div class="rlg"><i style="background:#0f766e"></i><span class="nm">E.T. saldo de obra<small>18 meses prom.</small></span><b>117</b></div>
+          <div class="rlg"><i style="background:#d97706"></i><span class="nm">Proceso de selección<small>9 meses prom.</small></span><b>35</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P11 -->
+  <div>
+    <span class="prop-label">Propuesta <b>11</b> · Tabla ejecutiva</span>
+    <p class="prop-desc">Densidad máxima de información: obras, meses e inversión por etapa, con fila de totales. Para perfil directivo/técnico.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>obras · tiempo promedio · inversión por etapa</p></div>
+      <table class="xtb">
+        <thead><tr><th>Etapa</th><th>Obras</th><th>Meses</th><th>S/ mlls.</th></tr></thead>
+        <tbody>
+          <tr><td><span class="stg"><i style="background:#1d4ed8"></i>Diagnóstico</span></td><td>10</td><td class="muted">20</td><td>531</td></tr>
+          <tr><td><span class="stg"><i style="background:#0284c7"></i>Informe situacional</span></td><td>81</td><td class="muted">23</td><td>1,128</td></tr>
+          <tr><td><span class="stg"><i style="background:#0f766e"></i>E.T. saldo de obra</span></td><td>117</td><td class="muted">18</td><td>5,370</td></tr>
+          <tr><td><span class="stg"><i style="background:#d97706"></i>Proceso de selección</span></td><td>35</td><td class="muted">9</td><td>1,519</td></tr>
+          <tr class="tot"><td>Total en proceso</td><td>243</td><td class="muted">~70</td><td>8,549</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- P12 -->
+  <div>
+    <span class="prop-label">Propuesta <b>12</b> · Stepper + barra apilada</span>
+    <p class="prop-desc">Arriba el proceso como stepper horizontal (nodos 1→4 conectados); abajo la barra apilada de participación con mini-métricas.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>proceso de destrabe, de diagnóstico a selección</p></div>
+      <div class="stp">
+        <div class="stp-track">
+          <div class="stp-node"><div class="stp-dot" style="background:#1d4ed8">1</div><span class="nb">10</span><span class="nl">Diagnóstico<br>20 m prom.</span></div>
+          <div class="stp-node"><div class="stp-dot" style="background:#0284c7">2</div><span class="nb">81</span><span class="nl">Informe situacional<br>23 m prom.</span></div>
+          <div class="stp-node"><div class="stp-dot" style="background:#0f766e">3</div><span class="nb">117</span><span class="nl">E.T. saldo de obra<br>18 m prom.</span></div>
+          <div class="stp-node"><div class="stp-dot" style="background:#d97706">4</div><span class="nb">35</span><span class="nl">Proceso de selección<br>9 m prom.</span></div>
+        </div>
+        <div>
+          <div class="stp-stack">
+            <i style="width:4.1%;background:#1d4ed8"></i>
+            <i style="width:33.3%;background:#0284c7"></i>
+            <i style="width:48.1%;background:#0f766e"></i>
+            <i style="width:14.4%;background:#d97706"></i>
+          </div>
+          <div class="stp-mini" style="margin-top:6px"><span>243 obras en proceso</span><span>48% concentradas en E.T.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- marcador ronda 3 -->
+  <div>
+    <span class="prop-label">Propuesta <b>13</b> · Dark premium</span>
+    <p class="prop-desc">La tarjeta en azul marino institucional (como el KPI héroe): timeline con puntos luminosos y tipografía en blanco. Máximo contraste visual en el dashboard.</p>
+    <div class="card dark">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="dkl">
+        <div class="dkr" style="--dc:#3b82f6;--glow:rgba(59,130,246,.55)">
+          <div class="dot"></div>
+          <div class="tx"><div class="t1">Diagnóstico</div><div class="t2">20 meses prom. · S/ 531 mlls.</div></div>
+          <div class="vv"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="dkr" style="--dc:#22d3ee;--glow:rgba(34,211,238,.5)">
+          <div class="dot"></div>
+          <div class="tx"><div class="t1">Informe de estado situacional</div><div class="t2">23 meses prom. · S/ 1,128 mlls.</div></div>
+          <div class="vv"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="dkr" style="--dc:#34d399;--glow:rgba(52,211,153,.5)">
+          <div class="dot"></div>
+          <div class="tx"><div class="t1">E.T. saldo de obra</div><div class="t2">18 meses prom. · S/ 5,370 mlls.</div></div>
+          <div class="vv"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="dkr" style="--dc:#fbbf24;--glow:rgba(251,191,36,.5)">
+          <div class="dot"></div>
+          <div class="tx"><div class="t1">Proceso de selección</div><div class="t2">9 meses prom. · S/ 1,519 mlls.</div></div>
+          <div class="vv"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* ===== Ronda 3: filas generosas + franja (P5+P4), variantes de subtítulo ===== */
+.g-rows { display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center; }
+.g-rows .hrow { padding: 13px 12px; }
+.g-rows .hicon { width: 52px; height: 52px; border-radius: 14px; }
+.g-rows .hicon svg { width: 25px; height: 25px; }
+.g-rows .ht { font-size: 15px; }
+.g-rows .hs { font-size: 12.5px; }
+.g-rows .hval b { font-size: 26px; }
+.hs.inv { color: #0f766e; font-weight: 700; }
+.hs.pct { color: #7f92b8; font-weight: 700; }
+.hs.pob { color: #b45309; font-weight: 700; }
+.minibar { width: 150px; height: 5px; border-radius: 3px; background: #eef1f5; overflow: hidden; margin-top: 7px; }
+.minibar i { display: block; height: 100%; border-radius: 3px; }
+</style>
+
+<div class="r2-sep">
+  <h2>Ronda 3 — combinación elegida (filas generosas + franja de indicadores)</h2>
+  <p>Cuatro variantes del texto que reemplaza al "tiempo promedio" bajo el nombre del hito (el tiempo irá luego como efecto hover). Datos reales del Excel.</p>
+</div>
+
+<div class="props">
+
+  <!-- P14: inversión -->
+  <div>
+    <span class="prop-label">Propuesta <b>14</b> · Inversión comprometida</span>
+    <p class="prop-desc">Debajo del nombre: el monto de inversión detenido en esa etapa (en teal). El dato más ejecutivo.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs inv">S/ 531 mlls. comprometidos</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs inv">S/ 1,128 mlls. comprometidos</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs inv">S/ 5,370 mlls. comprometidos</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs inv">S/ 1,519 mlls. comprometidos</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P15: % del total -->
+  <div>
+    <span class="prop-label">Propuesta <b>15</b> · Participación del total</span>
+    <p class="prop-desc">Debajo del nombre: qué % del total en proceso representa esa etapa.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs pct">4% del total en proceso</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs pct">33% del total en proceso</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs pct">48% del total en proceso</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs pct">14% del total en proceso</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P16: población -->
+  <div>
+    <span class="prop-label">Propuesta <b>16</b> · Población afectada</span>
+    <p class="prop-desc">Debajo del nombre: los habitantes que esperan esas obras (en ámbar). El dato con más peso social.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs pob">1.71 mlls. de habitantes esperan</div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs pob">327.8 mil habitantes esperan</div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs pob">2.25 mlls. de habitantes esperan</div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs pob">410.3 mil habitantes esperan</div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P17: mini-barra -->
+  <div>
+    <span class="prop-label">Propuesta <b>17</b> · Mini-barra, sin texto</span>
+    <p class="prop-desc">Debajo del nombre: solo una barra fina de participación en el color de la etapa. La opción más limpia.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="minibar"><i style="width:4.1%;background:#1d4ed8"></i></div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="minibar"><i style="width:33.3%;background:#0284c7"></i></div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="minibar"><i style="width:48.1%;background:#0f766e"></i></div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="minibar"><i style="width:14.4%;background:#d97706"></i></div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* ===== Ronda 4: efecto hover de barrido (sobre la P15 con "X% del total") ===== */
+.fx { position: relative; overflow: hidden; }
+.fx > * { position: relative; z-index: 1; }
+.fx::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; border-radius: inherit;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .38s cubic-bezier(.22, 1, .36, 1);
+}
+.fx:hover::before { transform: scaleX(1); }
+
+/* intercambio de subtítulo: % sale, tiempo entra (deslizando izq→der) */
+.hswap { position: relative; height: 19px; overflow: hidden; min-width: 220px; }
+.hswap span {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  font-size: 12.5px; font-weight: 700;
+  transition: transform .38s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
+}
+.hswap .sa { color: #7f92b8; }
+.hswap .sb { opacity: 0; transform: translateX(-22px); }
+.fx:hover .sa { opacity: 0; transform: translateX(22px); }
+.fx:hover .sb { opacity: 1; transform: translateX(0); }
+
+/* A: pintado sólido con el color del ícono */
+.fxA::before { background: var(--ic); }
+.fxA:hover .ht, .fxA:hover .hval b { color: #fff; }
+.fxA:hover .hval span { color: rgba(255,255,255,.85); }
+.fxA .sb { color: rgba(255,255,255,.95); }
+.fxA:hover .hicon { background: rgba(255,255,255,.22); }
+.fxA:hover .hicon svg { stroke: #fff; }
+
+/* B: pintado pastel (tile) — textos se mantienen */
+.fxB::before { background: var(--tile); }
+.fxB .sb { color: var(--ic); }
+
+/* C: barrido degradado del color del ícono */
+.fxC::before { background: linear-gradient(100deg, var(--ic) 0%, color-mix(in srgb, var(--ic) 72%, #ffffff) 100%); }
+.fxC:hover .ht, .fxC:hover .hval b { color: #fff; }
+.fxC:hover .hval span { color: rgba(255,255,255,.85); }
+.fxC .sb { color: rgba(255,255,255,.95); }
+.fxC:hover .hicon { background: rgba(255,255,255,.25); }
+.fxC:hover .hicon svg { stroke: #fff; }
+
+/* intercambio del valor derecho: obras -> meses (P18 y P20) */
+.vswap { position: relative; }
+.vswap .va, .vswap .vb { transition: transform .38s cubic-bezier(.22,1,.36,1), opacity .3s ease; }
+.vswap .vb { position: absolute; top: 0; right: 0; opacity: 0; transform: translateX(-18px); text-align: right; white-space: nowrap; }
+.fx:hover .vswap .va { opacity: 0; transform: translateX(18px); }
+.fx:hover .vswap .vb { opacity: 1; transform: translateX(0); }
+.fxA:hover .hs, .fxC:hover .hs { color: rgba(255,255,255,.9); }
+
+/* D: revelado minimal — solo subrayado que se desliza + swap del texto */
+.fxD::before { background: transparent; border-bottom: 2.5px solid var(--ic); inset: auto 10px 4px 10px; height: 0; }
+.fxD .sb { color: var(--ic); }
+.fxD:hover { background: rgba(42,120,214,.05); }
+</style>
+
+<div class="r2-sep">
+  <h2>Ronda 4 — el efecto hover (pasa el cursor por las filas para probarlo)</h2>
+  <p>Base elegida: P15 con "X% del total" (sin "en proceso"). Al pasar el cursor: barrido de izquierda a derecha en el color del ícono y el % se desliza dando paso al tiempo promedio.</p>
+</div>
+
+<div class="props">
+
+  <!-- P18 -->
+  <div>
+    <span class="prop-label">Propuesta <b>18</b> · Pintado sólido</span>
+    <p class="prop-desc">La fila se pinta del color del ícono y el valor derecho cambia: sale "obras", entra "meses prom.". El % queda fijo como subtítulo.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow fx fxA" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">4% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>10</b><span>obras</span></div><div class="vb"><b>20</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxA" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">33% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>81</b><span>obras</span></div><div class="vb"><b>23</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxA" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">48% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>117</b><span>obras</span></div><div class="vb"><b>18</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxA" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">14% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>35</b><span>obras</span></div><div class="vb"><b>9</b><span>meses prom.</span></div></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P19 -->
+  <div>
+    <span class="prop-label">Propuesta <b>19</b> · Pintado pastel</span>
+    <p class="prop-desc">El barrido usa el tono pastel del tile; los textos se mantienen oscuros y el tiempo aparece en el color del ícono. Más sutil.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow fx fxB" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hswap"><span class="sa">4% del total</span><span class="sb">⏱ 20 meses promedio</span></div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxB" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hswap"><span class="sa">33% del total</span><span class="sb">⏱ 23 meses promedio</span></div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxB" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hswap"><span class="sa">48% del total</span><span class="sb">⏱ 18 meses promedio</span></div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxB" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hswap"><span class="sa">14% del total</span><span class="sb">⏱ 9 meses promedio</span></div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P20 -->
+  <div>
+    <span class="prop-label">Propuesta <b>20</b> · Barrido degradado</span>
+    <p class="prop-desc">Igual que la 18 pero con barrido en degradado (intenso → claro). El valor derecho también cambia de obras a meses.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow fx fxC" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hs">4% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>10</b><span>obras</span></div><div class="vb"><b>20</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxC" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hs">33% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>81</b><span>obras</span></div><div class="vb"><b>23</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxC" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hs">48% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>117</b><span>obras</span></div><div class="vb"><b>18</b><span>meses prom.</span></div></div>
+        </div>
+        <div class="hrow fx fxC" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hs">14% del total</div></div>
+          <div class="hval vswap"><div class="va"><b>35</b><span>obras</span></div><div class="vb"><b>9</b><span>meses prom.</span></div></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P21 -->
+  <div>
+    <span class="prop-label">Propuesta <b>21</b> · Revelado minimal</span>
+    <p class="prop-desc">Sin pintado: solo un subrayado del color que se desliza bajo la fila y el texto cambia a tiempo promedio en el color del ícono. El más discreto.</p>
+    <div class="card">
+      <div class="chead"><h3>Hitos de reactivación</h3><p>etapa actual del proceso de destrabe</p></div>
+      <div class="g-rows">
+        <div class="hrow fx fxD" style="--tile:#dbeafe;--ic:#1d4ed8">
+          <div class="hicon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="15.9" y2="15.9"/></svg></div>
+          <div><div class="ht">Diagnóstico</div><div class="hswap"><span class="sa">4% del total</span><span class="sb">⏱ 20 meses promedio</span></div></div>
+          <div class="hval"><b>10</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxD" style="--tile:#e0f2fe;--ic:#0284c7">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+          <div><div class="ht">Informe de estado situacional</div><div class="hswap"><span class="sa">33% del total</span><span class="sb">⏱ 23 meses promedio</span></div></div>
+          <div class="hval"><b>81</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxD" style="--tile:#ccfbf1;--ic:#0f766e">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M2 12l10-10 10 10-10 10z"/><path d="M7 12l5-5"/><path d="M12 17l5-5"/></svg></div>
+          <div><div class="ht">E.T. saldo de obra</div><div class="hswap"><span class="sa">48% del total</span><span class="sb">⏱ 18 meses promedio</span></div></div>
+          <div class="hval"><b>117</b><span>obras</span></div>
+        </div>
+        <div class="hrow fx fxD" style="--tile:#fef3c7;--ic:#d97706">
+          <div class="hicon"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14 9 11"/></svg></div>
+          <div><div class="ht">Proceso de selección</div><div class="hswap"><span class="sa">14% del total</span><span class="sb">⏱ 9 meses promedio</span></div></div>
+          <div class="hval"><b>35</b><span>obras</span></div>
+        </div>
+      </div>
+      <div class="footsum">
+        <div class="fs-item"><div class="fs-v">~70 <span style="font-size:12px;font-weight:600">meses</span></div><div class="fs-l">Proceso completo prom.</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">28</div><div class="fs-l">Proyectadas 2026</div></div>
+        <div class="div"></div>
+        <div class="fs-item"><div class="fs-v">48%</div><div class="fs-l">Atascadas en E.T.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

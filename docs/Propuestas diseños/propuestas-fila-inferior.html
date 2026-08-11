@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuestas — Gráficos fila inferior</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(135deg, #ffffff 0%, #ece9f7 45%, #d4d9e8 100%);
+  background-attachment: fixed;
+  padding: 28px;
+  color: #0b0b0b;
+}
+h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.note { font-size: 13px; color: #52514e; margin-bottom: 22px; }
+.sec { max-width: 1640px; margin: 26px 0 12px; }
+.sec h2 { font-size: 16px; font-weight: 800; }
+.sec p { font-size: 12.5px; color: #52514e; }
+.props { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 22px; max-width: 1640px; }
+.prop-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+  background: #001740; color: #fff; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px;
+}
+.prop-label b { color: #ffd9a8; }
+.prop-desc { font-size: 12px; color: #52514e; margin-bottom: 10px; min-height: 30px; }
+.card {
+  background: rgba(255,255,255,.82); border: 1px solid #e8eaed; border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 12px 26px -10px rgba(16,24,40,.22);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 320px;
+}
+.chead { padding-bottom: 10px; border-bottom: 1px solid #e8eaed; }
+.chead h3 { font-size: 16.5px; font-weight: 600; color: #13242B; line-height: 1.25; }
+.chead p { font-size: 13px; color: #42565E; margin-top: 2px; }
+.chart { flex: 1; min-height: 210px; }
+
+/* Apilada 100% (avance) */
+.stak { display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center; }
+.stak-bar { display: flex; height: 34px; gap: 2px; border-radius: 8px; overflow: hidden; }
+.stak-bar i { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
+.stak-lg { display: flex; flex-wrap: wrap; gap: 8px; }
+.slg { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #42565E;
+  background: #f2f4f8; border-radius: 999px; padding: 4px 11px; }
+.slg i { width: 9px; height: 9px; border-radius: 3px; }
+.slg b { color: #13242B; }
+
+/* Lista de progreso (avance) */
+.plist { display: flex; flex-direction: column; gap: 13px; flex: 1; justify-content: center; }
+.prow { display: flex; flex-direction: column; gap: 5px; }
+.prow .top { display: flex; align-items: baseline; }
+.prow .nm { font-size: 13px; font-weight: 700; color: #13242B; }
+.prow .vv { margin-left: auto; font-size: 14.5px; font-weight: 800; color: #13242B; }
+.prow .vv small { font-size: 10.5px; color: #7f92b8; margin-left: 3px; font-weight: 600; }
+.prow .bar { height: 8px; border-radius: 5px; background: #eef1f5; overflow: hidden; }
+.prow .bar i { display: block; height: 100%; border-radius: 5px; }
+
+/* Tarjetas por periodo (proyección) */
+.ycards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; flex: 1; align-content: center; }
+.yc { border-radius: 12px; padding: 13px 10px; text-align: center; display: flex; flex-direction: column; gap: 3px;
+  background: #f4f6fa; transition: transform .2s ease, box-shadow .2s ease; }
+.yc:hover { transform: translateY(-3px); box-shadow: 0 12px 22px -10px rgba(0,23,64,.35); }
+.yc.hot { background: linear-gradient(150deg, #001740, #0a3a86); }
+.yc.hot .n, .yc.hot .y { color: #fff; }
+.yc.hot .s { color: #9fc0ff; }
+.yc .y { font-size: 11px; font-weight: 800; color: #7f92b8; text-transform: uppercase; letter-spacing: .04em; }
+.yc .n { font-size: 24px; font-weight: 800; color: #13242B; line-height: 1.05; }
+.yc .s { font-size: 10px; color: #9aa0a6; font-weight: 600; }
+
+/* Franja heatmap (año) */
+.heat { display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center; }
+.heat-row { display: flex; gap: 3px; }
+.heat-cell { flex: 1; border-radius: 6px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; cursor: default; transition: transform .15s ease; }
+.heat-cell:hover { transform: scale(1.12); }
+.heat-cell b { font-size: 12px; font-weight: 800; }
+.heat-cell span { font-size: 8.5px; font-weight: 700; opacity: .75; }
+.heat-note { display: flex; justify-content: space-between; font-size: 10.5px; color: #7f92b8; font-weight: 600; }
+</style>
+<script src="../echarts.min.js"></script>
+</head>
+<body>
+<h1>Propuestas — Gráficos de la fila inferior</h1>
+<p class="note">Alternativas para: % Avance físico · Proyección de reactivación · Año de paralización. Datos reales. Los gráficos ECharts tienen tooltip al pasar el cursor.</p>
+
+<!-- ============ SECCIÓN A ============ -->
+<div class="sec"><h2>A · % Avance físico</h2><p>Hoy: histograma de barras. Alternativas:</p></div>
+<div class="props">
+
+  <div>
+    <span class="prop-label">A1 · <b>Barras</b> (actual, referencia)</span>
+    <p class="prop-desc">El histograma que ya tienes en el dashboard.</p>
+    <div class="card"><div class="chead"><h3>% Avance físico</h3><p>obras por rango de avance</p></div><div class="chart" id="a1"></div></div>
+  </div>
+
+  <div>
+    <span class="prop-label">A2 · <b>Barra apilada 100%</b></span>
+    <p class="prop-desc">Una sola barra segmentada: se lee de inmediato que el 43% de las obras ya pasó el 80% de avance. Compacta y ejecutiva.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>distribución de las 243 obras</p></div>
+      <div class="stak">
+        <div class="stak-bar">
+          <i style="width:9.1%;background:#93c5fd">22</i>
+          <i style="width:9.5%;background:#60a5fa">23</i>
+          <i style="width:14.8%;background:#3b82f6">36</i>
+          <i style="width:23.9%;background:#1d4ed8">58</i>
+          <i style="width:42.8%;background:#001740">104</i>
+        </div>
+        <div class="stak-lg">
+          <span class="slg"><i style="background:#93c5fd"></i>0–20% <b>22</b></span>
+          <span class="slg"><i style="background:#60a5fa"></i>20–40% <b>23</b></span>
+          <span class="slg"><i style="background:#3b82f6"></i>40–60% <b>36</b></span>
+          <span class="slg"><i style="background:#1d4ed8"></i>60–80% <b>58</b></span>
+          <span class="slg"><i style="background:#001740"></i>80–100% <b>104</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <span class="prop-label">A3 · <b>Lista de progreso</b></span>
+    <p class="prop-desc">Cada rango como fila con barra proporcional — consistente con el estilo "cards/listas" que ya usa el dashboard.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>obras por rango de avance</p></div>
+      <div class="plist">
+        <div class="prow"><div class="top"><span class="nm">80 – 100%</span><span class="vv">104<small>obras · 43%</small></span></div><div class="bar"><i style="width:100%;background:#001740"></i></div></div>
+        <div class="prow"><div class="top"><span class="nm">60 – 80%</span><span class="vv">58<small>obras · 24%</small></span></div><div class="bar"><i style="width:55.8%;background:#1d4ed8"></i></div></div>
+        <div class="prow"><div class="top"><span class="nm">40 – 60%</span><span class="vv">36<small>obras · 15%</small></span></div><div class="bar"><i style="width:34.6%;background:#3b82f6"></i></div></div>
+        <div class="prow"><div class="top"><span class="nm">20 – 40%</span><span class="vv">23<small>obras · 9%</small></span></div><div class="bar"><i style="width:22.1%;background:#60a5fa"></i></div></div>
+        <div class="prow"><div class="top"><span class="nm">0 – 20%</span><span class="vv">22<small>obras · 9%</small></span></div><div class="bar"><i style="width:21.2%;background:#93c5fd"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SECCIÓN B ============ -->
+<div class="sec"><h2>B · Proyección de reactivación</h2><p>Hoy: barras por periodo. Alternativas:</p></div>
+<div class="props">
+
+  <div>
+    <span class="prop-label">B1 · <b>Barras</b> (actual, referencia)</span>
+    <p class="prop-desc">Las columnas que ya tienes.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div><div class="chart" id="b1"></div></div>
+  </div>
+
+  <div>
+    <span class="prop-label">B2 · <b>Línea con área</b></span>
+    <p class="prop-desc">Ruta futura de reactivación: línea con puntos etiquetados y área degradada. Comunica trayectoria, no solo cantidades.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>ruta 2026 → 2029</p></div><div class="chart" id="b2"></div></div>
+  </div>
+
+  <div>
+    <span class="prop-label">B3 · <b>Tarjetas por periodo</b></span>
+    <p class="prop-desc">Cinco mini-tarjetas; el pico (2027) destacado en azul marino. Coherente con el lenguaje de cards del dashboard.</p>
+    <div class="card">
+      <div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="ycards">
+        <div class="yc"><span class="y">III Trim 26</span><span class="n">7</span><span class="s">obras</span></div>
+        <div class="yc"><span class="y">IV Trim 26</span><span class="n">21</span><span class="s">obras</span></div>
+        <div class="yc hot"><span class="y">2027</span><span class="n">104</span><span class="s">obras · pico</span></div>
+        <div class="yc"><span class="y">2028</span><span class="n">49</span><span class="s">obras</span></div>
+        <div class="yc"><span class="y">2029</span><span class="n">62</span><span class="s">obras</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SECCIÓN C ============ -->
+<div class="sec"><h2>C · Año de paralización</h2><p>Hoy: 17 barras. Es una serie temporal — alternativas:</p></div>
+<div class="props">
+
+  <div>
+    <span class="prop-label">C1 · <b>Barras</b> (actual, referencia)</span>
+    <p class="prop-desc">Las columnas que ya tienes (17 años).</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>obras según el año en que se paralizaron</p></div><div class="chart" id="c1"></div></div>
+  </div>
+
+  <div>
+    <span class="prop-label">C2 · <b>Área temporal</b></span>
+    <p class="prop-desc">La historia como curva: se ve el ascenso hasta el pico de 2022 (43 obras) y el descenso posterior. Ideal para series de años.</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>evolución 2009 → 2026 · pico en 2022</p></div><div class="chart" id="c2"></div></div>
+  </div>
+
+  <div>
+    <span class="prop-label">C3 · <b>Franja de calor</b></span>
+    <p class="prop-desc">Cada año es una celda coloreada por intensidad (más oscuro = más obras). Máxima compacidad; el patrón se ve de un vistazo.</p>
+    <div class="card">
+      <div class="chead"><h3>Año de paralización</h3><p>intensidad por año</p></div>
+      <div class="heat">
+        <div class="heat-row" id="heatrow"></div>
+        <div class="heat-note"><span>2009</span><span>más oscuro = más obras paralizadas ese año</span><span>2026</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* ===== Ronda 2 (investigación) ===== */
+.r2t { max-width: 1640px; margin: 34px 0 12px; }
+.r2t h2 { font-size: 17px; font-weight: 800; }
+.r2t p { font-size: 12.5px; color: #52514e; }
+
+/* A4: waffle */
+.wfl { display: flex; gap: 18px; align-items: center; flex: 1; }
+.wfl-grid { display: grid; grid-template-columns: repeat(10, 17px); grid-auto-rows: 17px; gap: 4px; }
+.wfl-grid i { border-radius: 4px; transition: transform .15s ease; cursor: default; }
+.wfl-grid i:hover { transform: scale(1.25); }
+.wfl-lg { display: flex; flex-direction: column; gap: 9px; }
+.wlg { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #42565E; }
+.wlg i { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.wlg b { color: #13242B; margin-left: auto; padding-left: 12px; }
+
+/* A5: termómetro */
+.thermo { display: flex; gap: 16px; align-items: stretch; flex: 1; justify-content: center; padding: 6px 0; }
+.th-col { width: 64px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column-reverse; }
+.th-col i { display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 12px; }
+.th-lbl { display: flex; flex-direction: column-reverse; justify-content: space-between; padding: 2px 0; }
+.th-lbl div { font-size: 11.5px; color: #42565E; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.th-lbl small { color: #7f92b8; font-weight: 600; }
+
+/* B5: timeline de hitos */
+.mtl { display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center; }
+.mtl-track { position: relative; height: 130px; }
+.mtl-line { position: absolute; left: 3%; right: 3%; top: 50%; height: 3px; background: linear-gradient(90deg, #93c5fd, #001740); border-radius: 2px; }
+.mtl-node { position: absolute; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; }
+.mtl-dot { border-radius: 50%; background: #1d4ed8; border: 3px solid #fff; box-shadow: 0 4px 12px -2px rgba(0,23,64,.4); transition: transform .2s ease; }
+.mtl-node:hover .mtl-dot { transform: scale(1.15); }
+.mtl-node .cnt { position: absolute; bottom: calc(50% + 30px); font-size: 16px; font-weight: 800; color: #13242B; white-space: nowrap; }
+.mtl-node .yr { position: absolute; top: calc(50% + 26px); font-size: 10.5px; font-weight: 700; color: #7f92b8; white-space: nowrap; text-transform: uppercase; letter-spacing: .03em; }
+
+/* C5: grupos por periodo */
+.era { display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: center; }
+.era-row { display: flex; flex-direction: column; gap: 6px; }
+.era-top { display: flex; align-items: baseline; gap: 8px; }
+.era-top .nm { font-size: 13.5px; font-weight: 800; color: #13242B; }
+.era-top .sub { font-size: 11px; color: #7f92b8; font-weight: 600; }
+.era-top .vv { margin-left: auto; font-size: 16px; font-weight: 800; color: #13242B; }
+.era-top .vv small { font-size: 10.5px; color: #7f92b8; margin-left: 3px; }
+.era-bar { height: 14px; border-radius: 8px; background: #eef1f5; overflow: hidden; }
+.era-bar i { display: flex; align-items: center; height: 100%; border-radius: 8px; color: #fff; font-size: 10px; font-weight: 800; padding-left: 8px; }
+.era-note { font-size: 11.5px; color: #52514e; background: #fff7e6; border: 1px solid #f5dfb0; border-radius: 8px; padding: 8px 11px; font-weight: 600; }
+.era-note b { color: #b45309; }
+</style>
+
+<div class="r2t">
+  <h2>Ronda 2 — según mejores prácticas de reporte</h2>
+  <p>Investigado: waffle para progreso y partes-de-un-todo · acumulado con meta para pipelines de proyectos · lollipop y agrupación narrativa para series largas de años.</p>
+</div>
+
+<div class="props">
+
+  <!-- A4 -->
+  <div>
+    <span class="prop-label">A4 · <b>Waffle chart</b> (avance físico)</span>
+    <p class="prop-desc">Estándar moderno para "partes de un todo": 100 celdas = 243 obras. Se ve al instante que casi la mitad del parque está por concluir.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>cada celda ≈ 1% de las 243 obras</p></div>
+      <div class="wfl">
+        <div class="wfl-grid" id="waffle"></div>
+        <div class="wfl-lg">
+          <div class="wlg"><i style="background:#93c5fd"></i>0–20% <b>22</b></div>
+          <div class="wlg"><i style="background:#60a5fa"></i>20–40% <b>23</b></div>
+          <div class="wlg"><i style="background:#3b82f6"></i>40–60% <b>36</b></div>
+          <div class="wlg"><i style="background:#1d4ed8"></i>60–80% <b>58</b></div>
+          <div class="wlg"><i style="background:#001740"></i>80–100% <b>104</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A5 -->
+  <div>
+    <span class="prop-label">A5 · <b>Termómetro de avance</b></span>
+    <p class="prop-desc">Columna 100% apilada vertical: el avance "sube" como temperatura hacia la conclusión. Lectura de abajo (0%) hacia arriba (100%).</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>distribución vertical de las 243 obras</p></div>
+      <div class="thermo">
+        <div class="th-col">
+          <i style="height:9.1%;background:#93c5fd">22</i>
+          <i style="height:9.5%;background:#60a5fa">23</i>
+          <i style="height:14.8%;background:#3b82f6">36</i>
+          <i style="height:23.9%;background:#1d4ed8">58</i>
+          <i style="height:42.8%;background:#001740">104</i>
+        </div>
+        <div class="th-lbl">
+          <div>0–20% <small>· 9%</small></div>
+          <div>20–40% <small>· 9%</small></div>
+          <div>40–60% <small>· 15%</small></div>
+          <div>60–80% <small>· 24%</small></div>
+          <div>80–100% <small>· 43% del parque</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B4 -->
+  <div>
+    <span class="prop-label">B4 · <b>Acumulado hacia la meta</b></span>
+    <p class="prop-desc">La práctica recomendada para pipelines: escalones acumulados 7 → 28 → 132 → 181 → 243, con la línea de meta. Responde "¿cuándo terminamos de destrabar?"</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras acumuladas hacia la meta de 243</p></div><div class="chart" id="b4"></div></div>
+  </div>
+
+  <!-- B5 -->
+  <div>
+    <span class="prop-label">B5 · <b>Línea de hitos</b></span>
+    <p class="prop-desc">Timeline de proyecto: cada periodo es un nodo cuyo tamaño refleja las obras a reactivar. El pico 2027 domina visualmente.</p>
+    <div class="card">
+      <div class="chead"><h3>Proyección de reactivación</h3><p>ruta de destrabe 2026 → 2029</p></div>
+      <div class="mtl">
+        <div class="mtl-track">
+          <div class="mtl-line"></div>
+          <div class="mtl-node" style="left:8%"><span class="cnt">7</span><div class="mtl-dot" style="width:18px;height:18px"></div><span class="yr">III Trim 26</span></div>
+          <div class="mtl-node" style="left:28%"><span class="cnt">21</span><div class="mtl-dot" style="width:26px;height:26px"></div><span class="yr">IV Trim 26</span></div>
+          <div class="mtl-node" style="left:50%"><span class="cnt">104</span><div class="mtl-dot" style="width:52px;height:52px;background:#bb0027"></div><span class="yr">2027 · pico</span></div>
+          <div class="mtl-node" style="left:72%"><span class="cnt">49</span><div class="mtl-dot" style="width:36px;height:36px"></div><span class="yr">2028</span></div>
+          <div class="mtl-node" style="left:92%"><span class="cnt">62</span><div class="mtl-dot" style="width:40px;height:40px;background:#001740"></div><span class="yr">2029 · cierre</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C4 -->
+  <div>
+    <span class="prop-label">C4 · <b>Lollipop anotado</b></span>
+    <p class="prop-desc">Para 17 años, la práctica recomendada: tallos finos + puntos (menos tinta que 17 barras), promedio como referencia y el pico 2022 destacado en rojo.</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>pico 2022 · línea de referencia = promedio (14)</p></div><div class="chart" id="c4"></div></div>
+  </div>
+
+  <!-- C5 -->
+  <div>
+    <span class="prop-label">C5 · <b>Narrativa por periodos</b></span>
+    <p class="prop-desc">La serie agrupada en 3 eras con su lectura: el hallazgo (58% se paralizó desde 2021) se entrega directamente, sin que el lector lo calcule.</p>
+    <div class="card">
+      <div class="chead"><h3>Año de paralización</h3><p>agrupado por periodo</p></div>
+      <div class="era">
+        <div class="era-row">
+          <div class="era-top"><span class="nm">2009 – 2015</span><span class="sub">7 años</span><span class="vv">37<small>obras · 15%</small></span></div>
+          <div class="era-bar"><i style="width:26%;background:#93c5fd;color:#1e3a5f">15%</i></div>
+        </div>
+        <div class="era-row">
+          <div class="era-top"><span class="nm">2016 – 2020</span><span class="sub">5 años</span><span class="vv">64<small>obras · 26%</small></span></div>
+          <div class="era-bar"><i style="width:45%;background:#3b82f6">26%</i></div>
+        </div>
+        <div class="era-row">
+          <div class="era-top"><span class="nm">2021 – 2026</span><span class="sub">6 años</span><span class="vv">142<small>obras · 58%</small></span></div>
+          <div class="era-bar"><i style="width:100%;background:#001740">58%</i></div>
+        </div>
+        <div class="era-note">⚠ <b>El 58% del parque paralizado</b> se originó en los últimos 6 años, con pico en 2022 (43 obras).</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const FONT = "'Hanken Grotesk', system-ui, sans-serif";
+const NAVY2 = '#002b69', BLUE = '#3f83d9';
+const TOOLTIP = {
+  backgroundColor: 'rgba(0,23,64,.94)', borderWidth: 0, padding: [9, 13],
+  textStyle: { color: '#fff', fontFamily: FONT, fontSize: 12.5 },
+  extraCssText: 'box-shadow:0 10px 28px -6px rgba(0,23,64,.5); border-radius:9px;'
+};
+const AXIS_LBL = { fontFamily: FONT, fontSize: 11, color: '#7b7b76' };
+const vGrad = () => new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: BLUE }, { offset: 1, color: NAVY2 }]);
+
+const AVANCE = [{l:'0-20%',v:22},{l:'20-40%',v:23},{l:'40-60%',v:36},{l:'60-80%',v:58},{l:'80-100%',v:104}];
+const PROY = [{l:'III Trim 26',v:7},{l:'IV Trim 26',v:21},{l:'2027',v:104},{l:'2028',v:49},{l:'2029',v:62}];
+const ANIO = [['2009',1],['2011',1],['2012',3],['2013',8],['2014',13],['2015',11],['2016',10],['2017',11],['2018',19],['2019',14],['2020',10],['2021',19],['2022',43],['2023',28],['2024',27],['2025',20],['2026',5]];
+
+function bars(id, items, rotate) {
+  const c = echarts.init(document.getElementById(id));
+  c.setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: p => '<b style="font-size:15px">' + p.value + '</b> obras<br><span style="opacity:.85">' + p.name + '</span>' },
+    grid: { left: 8, right: 8, top: 26, bottom: 4, containLabel: true },
+    xAxis: { type: 'category', data: items.map(d => d.l), axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false },
+      axisLabel: { ...AXIS_LBL, interval: 0, rotate: rotate || 0 } },
+    yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+    series: [{ type: 'bar', data: items.map(d => d.v), barMaxWidth: 26, itemStyle: { color: vGrad() },
+      label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 700, fontSize: 11, color: '#13242B' },
+      animationDuration: 850, animationEasing: 'cubicOut', animationDelay: i => i * 40 }]
+  });
+  return c;
+}
+
+bars('a1', AVANCE);
+bars('b1', PROY);
+bars('c1', ANIO.map(d => ({ l: d[0], v: d[1] })), 55);
+
+/* B2: línea con área (proyección) */
+const b2 = echarts.init(document.getElementById('b2'));
+b2.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: '#c3c2b7' } },
+    formatter: p => '<b style="font-size:15px">' + p[0].value + '</b> obras<br><span style="opacity:.85">' + p[0].name + '</span>' },
+  grid: { left: 8, right: 20, top: 30, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', boundaryGap: false, data: PROY.map(d => d.l),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 0 } },
+  yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [{
+    type: 'line', data: PROY.map(d => d.v), smooth: .35,
+    lineStyle: { width: 3, color: '#1d4ed8' },
+    itemStyle: { color: '#1d4ed8', borderColor: '#fff', borderWidth: 2 },
+    symbol: 'circle', symbolSize: 9,
+    label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 800, fontSize: 11.5, color: '#13242B' },
+    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+      { offset: 0, color: 'rgba(29,78,216,.28)' }, { offset: 1, color: 'rgba(29,78,216,.02)' }]) },
+    animationDuration: 1100, animationEasing: 'cubicOut'
+  }]
+});
+
+/* C2: área temporal (año) */
+const c2 = echarts.init(document.getElementById('c2'));
+c2.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: '#c3c2b7' } },
+    formatter: p => '<b style="font-size:15px">' + p[0].value + '</b> obras<br><span style="opacity:.85">Paralizadas en ' + p[0].name + '</span>' },
+  grid: { left: 8, right: 14, top: 30, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', boundaryGap: false, data: ANIO.map(d => d[0]),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 2 } },
+  yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [{
+    type: 'line', data: ANIO.map(d => d[1]), smooth: .4,
+    lineStyle: { width: 3, color: '#002b69' },
+    itemStyle: { color: '#002b69', borderColor: '#fff', borderWidth: 2 },
+    symbol: 'circle', symbolSize: 7, showSymbol: false,
+    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+      { offset: 0, color: 'rgba(0,43,105,.32)' }, { offset: 1, color: 'rgba(0,43,105,.02)' }]) },
+    markPoint: { data: [{ coord: ['2022', 43], value: 43 }], symbolSize: 46,
+      itemStyle: { color: '#bb0027' },
+      label: { color: '#fff', fontWeight: 800, fontFamily: FONT, fontSize: 12 } },
+    animationDuration: 1100, animationEasing: 'cubicOut'
+  }]
+});
+
+/* C3: franja de calor */
+const heat = document.getElementById('heatrow');
+const maxA = 43;
+ANIO.forEach(d => {
+  const t = d[1] / maxA;
+  const cell = document.createElement('div');
+  cell.className = 'heat-cell';
+  const light = 94 - t * 64; /* 94% -> 30% */
+  cell.style.background = 'hsl(219, 76%, ' + light + '%)';
+  const dark = t > 0.45;
+  const b = document.createElement('b'); b.textContent = d[1]; b.style.color = dark ? '#fff' : '#13242B';
+  const s = document.createElement('span'); s.textContent = d[0].slice(2); s.style.color = dark ? '#cfe0ff' : '#52607a';
+  cell.append(b, s);
+  cell.title = d[0] + ': ' + d[1] + ' obras paralizadas';
+  heat.appendChild(cell);
+});
+
+/* ===== Ronda 2 ===== */
+
+/* A4: waffle 10x10 (celdas: 9, 9, 15, 24, 43) */
+(function () {
+  const grid = document.getElementById('waffle');
+  const groups = [
+    { n: 9, c: '#93c5fd', l: '0–20%' }, { n: 9, c: '#60a5fa', l: '20–40%' },
+    { n: 15, c: '#3b82f6', l: '40–60%' }, { n: 24, c: '#1d4ed8', l: '60–80%' },
+    { n: 43, c: '#001740', l: '80–100%' }
+  ];
+  groups.forEach(g => {
+    for (let k = 0; k < g.n; k++) {
+      const cell = document.createElement('i');
+      cell.style.background = g.c;
+      cell.title = g.l + ' de avance';
+      grid.appendChild(cell);
+    }
+  });
+})();
+
+/* B4: acumulado escalonado hacia la meta */
+const CUM = [7, 28, 132, 181, 243];
+const b4 = echarts.init(document.getElementById('b4'));
+b4.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis',
+    formatter: p => '<b style="font-size:15px">' + p[0].value + '</b> acumuladas<br><span style="opacity:.85">' + p[0].name + ' · +' + PROY[p[0].dataIndex].v + ' en el periodo</span>' },
+  grid: { left: 8, right: 30, top: 30, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', boundaryGap: false, data: PROY.map(d => d.l),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 0 } },
+  yAxis: { type: 'value', max: 260, splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [{
+    type: 'line', step: 'end', data: CUM,
+    lineStyle: { width: 3, color: '#0f766e' },
+    itemStyle: { color: '#0f766e', borderColor: '#fff', borderWidth: 2 },
+    symbol: 'circle', symbolSize: 9,
+    label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 800, fontSize: 11.5, color: '#13242B' },
+    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+      { offset: 0, color: 'rgba(15,118,110,.25)' }, { offset: 1, color: 'rgba(15,118,110,.02)' }]) },
+    markLine: { symbol: 'none', lineStyle: { color: '#bb0027', width: 2, type: 'solid' },
+      label: { formatter: 'Meta total: 243', fontFamily: FONT, fontWeight: 800, fontSize: 11, color: '#bb0027', position: 'insideStartTop' },
+      data: [{ yAxis: 243 }] },
+    animationDuration: 1100, animationEasing: 'cubicOut'
+  }]
+});
+
+/* C4: lollipop con promedio y pico destacado */
+const AVG = 243 / 17;
+const c4 = echarts.init(document.getElementById('c4'));
+c4.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis',
+    formatter: p => '<b style="font-size:15px">' + p[0].value + '</b> obras<br><span style="opacity:.85">Paralizadas en ' + p[0].name + '</span>' },
+  grid: { left: 8, right: 14, top: 30, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', data: ANIO.map(d => d[0]),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 1, rotate: 45 } },
+  yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [
+    { type: 'bar', data: ANIO.map(d => d[1]), barWidth: 3,
+      itemStyle: { color: p => ANIO[p.dataIndex][0] === '2022' ? '#bb0027' : '#9db8dd' } },
+    { type: 'scatter', data: ANIO.map(d => d[1]), symbolSize: 11,
+      itemStyle: { color: p => ANIO[p.dataIndex][0] === '2022' ? '#bb0027' : '#1d4ed8', borderColor: '#fff', borderWidth: 2 },
+      label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 800, fontSize: 10.5, color: '#13242B',
+        formatter: p => p.value >= 20 ? p.value : '' },
+      markLine: { symbol: 'none', lineStyle: { color: '#c3c2b7', width: 1.5, type: 'solid' },
+        label: { formatter: 'promedio 14', fontFamily: FONT, fontSize: 10, color: '#898781', position: 'insideEndTop' },
+        data: [{ yAxis: AVG }] },
+      animationDuration: 900, animationEasing: 'cubicOut', animationDelay: i => i * 30 }
+  ]
+});
+
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => ['a1','b1','c1','b2','c2','b4','c4','b7','b8','c6','c7','c8'].forEach(id => { const el = document.getElementById(id); if (el) echarts.getInstanceByDom(el)?.resize(); }), 150); });
+</script>
+
+<style>
+/* ===== Ronda 3 ===== */
+/* Waffle de puntos */
+.wfl-dots i { border-radius: 50% !important; }
+/* Waffle 243 celdas */
+.wfl243 { display: grid; grid-template-columns: repeat(27, 11px); grid-auto-rows: 11px; gap: 3px; }
+.wfl243 i { border-radius: 3px; cursor: default; transition: transform .15s ease; }
+.wfl243 i:hover { transform: scale(1.35); }
+/* Waffle horizontal con escala */
+.wflH { display: grid; grid-template-columns: repeat(20, 1fr); grid-auto-rows: 15px; gap: 3px; }
+.wflH i { border-radius: 4px; }
+.wscale { display: flex; justify-content: space-between; font-size: 10px; color: #7f92b8; font-weight: 700; margin-top: 6px; }
+/* Waffle + KPI */
+.wkpi { display: flex; gap: 18px; align-items: center; flex: 1; }
+.wkpi-num { flex: 1; }
+.wkpi-num .big { font-size: 52px; font-weight: 800; color: #001740; line-height: 1; letter-spacing: -.02em; }
+.wkpi-num .lbl { font-size: 13px; font-weight: 700; color: #13242B; margin-top: 6px; line-height: 1.35; }
+.wkpi-num .sub { font-size: 11.5px; color: #7f92b8; font-weight: 600; margin-top: 3px; }
+/* Barra única proyección */
+.pj-stak { display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center; }
+.pj-bar { display: flex; height: 38px; gap: 2px; border-radius: 9px; overflow: hidden; }
+.pj-bar i { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; line-height: 1.1; }
+.pj-bar i b { font-size: 12.5px; font-weight: 800; }
+.pj-bar i span { font-size: 8.5px; font-weight: 700; opacity: .8; text-transform: uppercase; }
+</style>
+
+<div class="r2t">
+  <h2>Ronda 3 — variaciones del waffle + más propuestas para Proyección y Año</h2>
+  <p>El waffle (A4) en 4 versiones, y nuevos enfoques para los otros dos gráficos.</p>
+</div>
+
+<div class="props">
+
+  <!-- A6 -->
+  <div>
+    <span class="prop-label">A6 · <b>Waffle de puntos</b></span>
+    <p class="prop-desc">La misma grilla 10×10 pero con celdas circulares — más suave y moderno.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>cada punto ≈ 1% de las 243 obras</p></div>
+      <div class="wfl">
+        <div class="wfl-grid wfl-dots" id="waffle6"></div>
+        <div class="wfl-lg">
+          <div class="wlg"><i style="background:#93c5fd;border-radius:50%"></i>0–20% <b>22</b></div>
+          <div class="wlg"><i style="background:#60a5fa;border-radius:50%"></i>20–40% <b>23</b></div>
+          <div class="wlg"><i style="background:#3b82f6;border-radius:50%"></i>40–60% <b>36</b></div>
+          <div class="wlg"><i style="background:#1d4ed8;border-radius:50%"></i>60–80% <b>58</b></div>
+          <div class="wlg"><i style="background:#001740;border-radius:50%"></i>80–100% <b>104</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A7 -->
+  <div>
+    <span class="prop-label">A7 · <b>Waffle de 243 celdas</b></span>
+    <p class="prop-desc">Cada cuadrito es UNA obra real (27×9). El más honesto: el lector cuenta obras, no porcentajes.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>cada celda = 1 obra (243 en total)</p></div>
+      <div style="display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center;align-items:center">
+        <div class="wfl243" id="waffle7"></div>
+        <div class="stak-lg">
+          <span class="slg"><i style="background:#93c5fd"></i>0–20% <b>22</b></span>
+          <span class="slg"><i style="background:#60a5fa"></i>20–40% <b>23</b></span>
+          <span class="slg"><i style="background:#3b82f6"></i>40–60% <b>36</b></span>
+          <span class="slg"><i style="background:#1d4ed8"></i>60–80% <b>58</b></span>
+          <span class="slg"><i style="background:#001740"></i>80–100% <b>104</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A8 -->
+  <div>
+    <span class="prop-label">A8 · <b>Waffle horizontal con escala</b></span>
+    <p class="prop-desc">Formato apaisado 20×5 con escala 0–100% debajo: combina la lectura del waffle con la de una barra de progreso.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>distribución de las 243 obras</p></div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;justify-content:center">
+        <div class="wflH" id="waffle8"></div>
+        <div class="wscale"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+        <div class="stak-lg" style="margin-top:8px">
+          <span class="slg"><i style="background:#93c5fd"></i>0–20% <b>22</b></span>
+          <span class="slg"><i style="background:#60a5fa"></i>20–40% <b>23</b></span>
+          <span class="slg"><i style="background:#3b82f6"></i>40–60% <b>36</b></span>
+          <span class="slg"><i style="background:#1d4ed8"></i>60–80% <b>58</b></span>
+          <span class="slg"><i style="background:#001740"></i>80–100% <b>104</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A9 -->
+  <div>
+    <span class="prop-label">A9 · <b>Waffle + KPI héroe</b></span>
+    <p class="prop-desc">El hallazgo como número protagonista (43% por concluir) y el waffle como respaldo visual al costado.</p>
+    <div class="card">
+      <div class="chead"><h3>% Avance físico</h3><p>estado del parque de obras</p></div>
+      <div class="wkpi">
+        <div class="wkpi-num">
+          <div class="big">43%</div>
+          <div class="lbl">104 obras con avance mayor al 80%</div>
+          <div class="sub">listas para el último impulso · solo 22 obras (9%) siguen bajo el 20%</div>
+        </div>
+        <div class="wfl-grid" id="waffle9"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B6 -->
+  <div>
+    <span class="prop-label">B6 · <b>Barra única por periodo</b></span>
+    <p class="prop-desc">Las 243 obras en una sola barra segmentada por periodo de reactivación — el "cuánto falta y cuándo" en una línea.</p>
+    <div class="card">
+      <div class="chead"><h3>Proyección de reactivación</h3><p>243 obras distribuidas en el tiempo</p></div>
+      <div class="pj-stak">
+        <div class="pj-bar">
+          <i style="width:2.9%;background:#93c5fd"><b>7</b></i>
+          <i style="width:8.6%;background:#60a5fa"><b>21</b><span>IV-26</span></i>
+          <i style="width:42.8%;background:#001740"><b>104</b><span>2027</span></i>
+          <i style="width:20.2%;background:#1d4ed8"><b>49</b><span>2028</span></i>
+          <i style="width:25.5%;background:#3b82f6"><b>62</b><span>2029</span></i>
+        </div>
+        <div class="stak-lg">
+          <span class="slg"><i style="background:#93c5fd"></i>III Trim 26 <b>7</b></span>
+          <span class="slg"><i style="background:#60a5fa"></i>IV Trim 26 <b>21</b></span>
+          <span class="slg"><i style="background:#001740"></i>2027 <b>104</b></span>
+          <span class="slg"><i style="background:#1d4ed8"></i>2028 <b>49</b></span>
+          <span class="slg"><i style="background:#3b82f6"></i>2029 <b>62</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B7 -->
+  <div>
+    <span class="prop-label">B7 · <b>Cascada (waterfall)</b></span>
+    <p class="prop-desc">Cada periodo es un bloque flotante que arranca donde terminó el anterior, subiendo hasta la meta de 243. El formato financiero clásico.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>construcción de la meta, periodo a periodo</p></div><div class="chart" id="b7"></div></div>
+  </div>
+
+  <!-- B8 -->
+  <div>
+    <span class="prop-label">B8 · <b>Combo barras + acumulado</b></span>
+    <p class="prop-desc">Barras con las obras de cada periodo y encima la línea del total acumulado — detalle y trayectoria en un solo gráfico (misma escala).</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>por periodo y acumulado</p></div><div class="chart" id="b8"></div></div>
+  </div>
+
+  <!-- C6 -->
+  <div>
+    <span class="prop-label">C6 · <b>Área con bandas de época</b></span>
+    <p class="prop-desc">La curva histórica sobre 3 bandas de fondo (2009-15, 2016-20, 2021-26): tendencia + narrativa de eras en un solo gráfico.</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>evolución con periodos sombreados</p></div><div class="chart" id="c6"></div></div>
+  </div>
+
+  <!-- C7 -->
+  <div>
+    <span class="prop-label">C7 · <b>Burbujas en línea de tiempo</b></span>
+    <p class="prop-desc">Una sola línea horizontal; cada año es una burbuja cuyo tamaño refleja las obras. El pico 2022 en rojo. Minimalista y elegante.</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>tamaño = obras paralizadas ese año</p></div><div class="chart" id="c7"></div></div>
+  </div>
+
+  <!-- C8 -->
+  <div>
+    <span class="prop-label">C8 · <b>Barras con resaltado condicional</b></span>
+    <p class="prop-desc">Las barras se quedan, pero solo los años sobre el promedio llevan color pleno (el resto en gris) — el ojo va directo a lo importante.</p>
+    <div class="card"><div class="chead"><h3>Año de paralización</h3><p>en azul: años sobre el promedio (14)</p></div><div class="chart" id="c8"></div></div>
+  </div>
+
+</div>
+
+<script>
+/* ===== Ronda 3 ===== */
+
+/* waffles 6, 8, 9 (100 celdas) + 7 (243 celdas) */
+(function () {
+  const groups100 = [
+    { n: 9, c: '#93c5fd', l: '0–20%' }, { n: 9, c: '#60a5fa', l: '20–40%' },
+    { n: 15, c: '#3b82f6', l: '40–60%' }, { n: 24, c: '#1d4ed8', l: '60–80%' },
+    { n: 43, c: '#001740', l: '80–100%' }
+  ];
+  const groups243 = [
+    { n: 22, c: '#93c5fd', l: '0–20%' }, { n: 23, c: '#60a5fa', l: '20–40%' },
+    { n: 36, c: '#3b82f6', l: '40–60%' }, { n: 58, c: '#1d4ed8', l: '60–80%' },
+    { n: 104, c: '#001740', l: '80–100%' }
+  ];
+  const fill = (id, groups) => {
+    const grid = document.getElementById(id);
+    if (!grid) return;
+    groups.forEach(g => {
+      for (let k = 0; k < g.n; k++) {
+        const cell = document.createElement('i');
+        cell.style.background = g.c;
+        cell.title = g.l + ' de avance';
+        grid.appendChild(cell);
+      }
+    });
+  };
+  fill('waffle6', groups100);
+  fill('waffle7', groups243);
+  fill('waffle8', groups100);
+  fill('waffle9', groups100);
+})();
+
+/* B7: waterfall */
+const b7 = echarts.init(document.getElementById('b7'));
+b7.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis',
+    formatter: p => { const i = p[p.length-1].dataIndex; return '<b style="font-size:15px">+' + PROY[i].v + '</b> obras<br><span style="opacity:.85">' + PROY[i].l + ' · acumulado ' + CUM[i] + '</span>'; } },
+  grid: { left: 8, right: 8, top: 28, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', data: PROY.map(d => d.l), axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 0 } },
+  yAxis: { type: 'value', max: 260, splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [
+    { type: 'bar', stack: 'w', data: [0, 7, 28, 132, 181], itemStyle: { color: 'transparent' }, barMaxWidth: 34 },
+    { type: 'bar', stack: 'w', data: PROY.map(d => d.v), barMaxWidth: 34,
+      itemStyle: { color: p => ['#93c5fd', '#60a5fa', '#001740', '#1d4ed8', '#3b82f6'][p.dataIndex] },
+      label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 800, fontSize: 11,
+        color: '#13242B', formatter: p => CUM[p.dataIndex] },
+      animationDuration: 900, animationEasing: 'cubicOut', animationDelay: i => i * 90 }
+  ]
+});
+
+/* B8: combo barras + línea acumulada */
+const b8 = echarts.init(document.getElementById('b8'));
+b8.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis',
+    formatter: p => { const i = p[0].dataIndex; return '<b style="font-size:15px">+' + PROY[i].v + '</b> en el periodo<br><span style="opacity:.85">' + PROY[i].l + ' · acumulado ' + CUM[i] + '</span>'; } },
+  grid: { left: 8, right: 20, top: 28, bottom: 4, containLabel: true },
+  legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 8, textStyle: { fontFamily: FONT, fontSize: 10.5, color: '#42565E' } },
+  xAxis: { type: 'category', data: PROY.map(d => d.l), axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 0 } },
+  yAxis: { type: 'value', max: 260, splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [
+    { name: 'Por periodo', type: 'bar', data: PROY.map(d => d.v), barMaxWidth: 24, itemStyle: { color: vGrad() },
+      label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 700, fontSize: 10.5, color: '#13242B' } },
+    { name: 'Acumulado', type: 'line', data: CUM, smooth: .3, lineStyle: { width: 2.5, color: '#bb0027' },
+      itemStyle: { color: '#bb0027', borderColor: '#fff', borderWidth: 2 }, symbol: 'circle', symbolSize: 8 }
+  ]
+});
+
+/* C6: área con bandas de época */
+const c6 = echarts.init(document.getElementById('c6'));
+c6.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'axis',
+    formatter: p => '<b style="font-size:15px">' + p[0].value + '</b> obras<br><span style="opacity:.85">Paralizadas en ' + p[0].name + '</span>' },
+  grid: { left: 8, right: 14, top: 30, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', boundaryGap: false, data: ANIO.map(d => d[0]),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 2 } },
+  yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [{
+    type: 'line', data: ANIO.map(d => d[1]), smooth: .4,
+    lineStyle: { width: 3, color: '#002b69' },
+    itemStyle: { color: '#002b69', borderColor: '#fff', borderWidth: 2 },
+    symbol: 'circle', symbolSize: 7, showSymbol: false,
+    areaStyle: { color: 'rgba(0,43,105,.14)' },
+    markArea: { silent: true,
+      data: [
+        [{ xAxis: '2009', itemStyle: { color: 'rgba(147,197,253,.14)' },
+           label: { show: true, position: 'insideTop', fontFamily: FONT, fontSize: 10, fontWeight: 800, color: '#60a5fa', formatter: '2009–15 · 37' } }, { xAxis: '2015' }],
+        [{ xAxis: '2016', itemStyle: { color: 'rgba(59,130,246,.10)' },
+           label: { show: true, position: 'insideTop', fontFamily: FONT, fontSize: 10, fontWeight: 800, color: '#3b82f6', formatter: '2016–20 · 64' } }, { xAxis: '2020' }],
+        [{ xAxis: '2021', itemStyle: { color: 'rgba(187,0,39,.07)' },
+           label: { show: true, position: 'insideTop', fontFamily: FONT, fontSize: 10, fontWeight: 800, color: '#bb0027', formatter: '2021–26 · 142 (58%)' } }, { xAxis: '2026' }]
+      ] },
+    animationDuration: 1100, animationEasing: 'cubicOut'
+  }]
+});
+
+/* C7: burbujas en línea de tiempo */
+const c7 = echarts.init(document.getElementById('c7'));
+c7.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'item',
+    formatter: p => '<b style="font-size:15px">' + ANIO[p.dataIndex][1] + '</b> obras<br><span style="opacity:.85">Paralizadas en ' + ANIO[p.dataIndex][0] + '</span>' },
+  grid: { left: 8, right: 14, top: 10, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', data: ANIO.map(d => d[0]),
+    axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false }, axisLabel: { ...AXIS_LBL, interval: 1, rotate: 45 } },
+  yAxis: { show: false, min: -1, max: 1 },
+  series: [{
+    type: 'scatter', data: ANIO.map(() => 0),
+    symbolSize: (v, p) => 8 + Math.sqrt(ANIO[p.dataIndex][1]) * 7,
+    itemStyle: { color: p => ANIO[p.dataIndex][0] === '2022' ? '#bb0027' : '#1d4ed8', opacity: .88, borderColor: '#fff', borderWidth: 2 },
+    label: { show: true, position: 'inside', fontFamily: FONT, fontWeight: 800, fontSize: 11, color: '#fff',
+      formatter: p => ANIO[p.dataIndex][1] >= 13 ? ANIO[p.dataIndex][1] : '' },
+    animationDuration: 900, animationEasing: 'elasticOut', animationDelay: i => i * 40
+  }]
+});
+
+/* C8: barras condicionales */
+const AVG8 = 243 / 17;
+const c8 = echarts.init(document.getElementById('c8'));
+c8.setOption({
+  tooltip: { ...TOOLTIP, trigger: 'item',
+    formatter: p => '<b style="font-size:15px">' + p.value + '</b> obras<br><span style="opacity:.85">Paralizadas en ' + p.name + '</span>' },
+  grid: { left: 8, right: 8, top: 26, bottom: 4, containLabel: true },
+  xAxis: { type: 'category', data: ANIO.map(d => d[0]), axisLine: { lineStyle: { color: '#d9d6d0' } }, axisTick: { show: false },
+    axisLabel: { ...AXIS_LBL, interval: 1, rotate: 45 } },
+  yAxis: { type: 'value', splitNumber: 3, splitLine: { lineStyle: { color: '#ededea' } }, axisLabel: AXIS_LBL },
+  series: [{
+    type: 'bar', data: ANIO.map(d => d[1]), barMaxWidth: 20,
+    itemStyle: { color: p => ANIO[p.dataIndex][1] >= AVG8 ? (ANIO[p.dataIndex][0] === '2022' ? '#bb0027' : '#002b69') : '#d8dfe9' },
+    label: { show: true, position: 'top', fontFamily: FONT, fontWeight: 800, fontSize: 10.5, color: '#13242B',
+      formatter: p => p.value >= AVG8 ? p.value : '' },
+    animationDuration: 850, animationEasing: 'cubicOut', animationDelay: i => i * 30
+  }]
+});
+</script>
+</body>
+</html>

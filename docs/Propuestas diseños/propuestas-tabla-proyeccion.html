@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuestas — Tabla de Proyección</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(135deg, #ffffff 0%, #ece9f7 45%, #d4d9e8 100%);
+  background-attachment: fixed;
+  padding: 28px; color: #0b0b0b;
+}
+h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.note { font-size: 13px; color: #52514e; margin-bottom: 24px; }
+.props { display: grid; grid-template-columns: repeat(auto-fit, minmax(370px, 1fr)); gap: 22px; max-width: 1640px; }
+.prop-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+  background: #001740; color: #fff; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px;
+}
+.prop-label b { color: #ffd9a8; }
+.prop-desc { font-size: 12px; color: #52514e; margin-bottom: 10px; min-height: 30px; }
+.card {
+  background: rgba(255,255,255,.88); border: 1px solid #e8eaed; border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 12px 26px -10px rgba(16,24,40,.22);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.chead { padding-bottom: 10px; border-bottom: 1px solid #e8eaed; }
+.chead h3 { font-size: 16.5px; font-weight: 600; color: #13242B; }
+.chead p { font-size: 13px; color: #42565E; margin-top: 2px; }
+
+/* base común */
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+th { font-size: 10.5px; font-weight: 700; color: #6b7688; text-align: right; padding: 8px 11px; }
+th:first-child { text-align: left; }
+td { font-size: 12.5px; font-weight: 700; color: #13242B; text-align: right; padding: 8px 11px; }
+td:first-child { text-align: left; }
+
+/* punto de color por periodo (rampa azul del dashboard, pico en naranja) */
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+.dot.p1 { background: #86b6ef; } .dot.p2 { background: #5598e7; }
+.dot.p3 { background: #eb6834; box-shadow: 0 0 0 3px rgba(235,104,52,.18); }
+.dot.p4 { background: #1c5cab; } .dot.p5 { background: #104281; }
+
+/* T1: hairline + puntos de color y pico resaltado */
+.t1 td { border-bottom: 1px solid #eef0f4; font-weight: 600; }
+.t1 td:first-child { font-weight: 700; }
+.t1 th { border-bottom: 1.5px solid #dde1e8; text-transform: uppercase; letter-spacing: .05em; font-size: 10px; }
+.t1 tr:last-child td { border-bottom: none; }
+.t1 tr.peak td { background: linear-gradient(90deg, #fff7ed, #ffedd5); color: #9a3412; font-weight: 800; }
+.t1 tr.peak td:first-child { border-left: 3px solid #eb6834; border-radius: 6px 0 0 6px; }
+.t1 tr.peak td:last-child { border-radius: 0 6px 6px 0; }
+.t1 tbody tr:not(.peak):hover td { background: #f7f9fc; }
+
+/* T2: zebra azul con hover profundo */
+.t2 tbody tr:nth-child(odd) td { background: #e8f0fd; }
+.t2 tbody tr:nth-child(even) td { background: #f6faff; }
+.t2 td:first-child { border-radius: 8px 0 0 8px; border-left: 3px solid #2a78d6; }
+.t2 td:last-child { border-radius: 0 8px 8px 0; }
+.t2 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; color: #1c5cab; }
+.t2 tbody tr:hover td { background: #cfe1f8; }
+
+/* T3: filas tarjeta con borde de color por periodo */
+.t3 { border-spacing: 0 7px; }
+.t3 td { background: #fff; border-top: 1px solid #edf0f4; border-bottom: 1px solid #edf0f4; }
+.t3 td:first-child { border-radius: 9px 0 0 9px; border-left: 4px solid var(--c, #2a78d6); padding-left: 12px; }
+.t3 td:last-child { border-right: 1px solid #edf0f4; border-radius: 0 9px 9px 0; }
+.t3 tbody tr { box-shadow: 0 2px 6px -2px rgba(16,24,40,.1); }
+.t3 tbody tr:hover td { background: #f8fafd; }
+.t3 tr.r1 td:first-child { --c: #86b6ef; } .t3 tr.r2 td:first-child { --c: #5598e7; }
+.t3 tr.r3 td:first-child { --c: #eb6834; } .t3 tr.r3 td { background: #fffaf5; }
+.t3 tr.r4 td:first-child { --c: #1c5cab; } .t3 tr.r5 td:first-child { --c: #104281; }
+
+/* T4: cabecera navy con franja roja institucional */
+.t4w { border: 1px solid #e6e9ef; border-radius: 10px; overflow: hidden; border-top: 4px solid #bb0027; }
+.t4 th { background: linear-gradient(180deg, #002b69, #001740); color: #fff; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; padding: 9px 11px; }
+.t4 td { border-bottom: 1px solid #f0f1f4; }
+.t4 tr:last-child td { border-bottom: none; }
+.t4 tr.peak td { background: #e8f0fd; color: #002b69; font-weight: 800; }
+.t4 tbody tr:not(.peak):hover td { background: rgba(42,120,214,.05); }
+
+/* T5: data-bars multicolor (una tinta por métrica) */
+.t5 td { border-bottom: 1px solid #f0f1f4; }
+.t5 tr:last-child td { border-bottom: none; }
+.t5 .db { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.t5 .db i { display: block; height: 7px; border-radius: 4px; }
+.t5 .db.obras i { background: linear-gradient(90deg, #002b69, #3f83d9); }
+.t5 .db.soles i { background: linear-gradient(90deg, #c2410c, #fb923c); }
+.t5 .db.pob   i { background: linear-gradient(90deg, #0f766e, #2dd4bf); }
+.t5 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t5 th.h-obras { color: #1c5cab; } .t5 th.h-soles { color: #c2410c; } .t5 th.h-pob { color: #0f766e; }
+
+/* T6: chips de color por periodo */
+.t6 td { border-bottom: 1px solid #f0f1f4; }
+.t6 tr:last-child td { border-bottom: none; }
+.t6 .chip { display: inline-block; font-size: 11.5px; font-weight: 800; padding: 3px 11px; border-radius: 999px; }
+.t6 .chip.c1 { background: #e8f0fd; color: #1d4ed8; }
+.t6 .chip.c2 { background: #dbeafe; color: #1c5cab; }
+.t6 .chip.hot { background: linear-gradient(135deg, #bb0027, #eb6834); color: #fff; box-shadow: 0 2px 8px -2px rgba(187,0,39,.5); }
+.t6 .chip.c4 { background: #d1fae5; color: #047857; }
+.t6 .chip.c5 { background: #ede9fe; color: #6d28d9; }
+.t6 .num { font-size: 13px; }
+
+/* T7: primera columna navy sólida */
+.t7w { border: 1px solid #e6e9ef; border-radius: 10px; overflow: hidden; }
+.t7 td, .t7 th { border-bottom: 1px solid #f0f1f4; }
+.t7 tr:last-child td { border-bottom: none; }
+.t7 td:first-child { background: linear-gradient(90deg, #001740, #0a3a86); color: #fff; font-weight: 800; border-right: none; }
+.t7 tr.peak td:first-child { color: #ffd9a8; }
+.t7 tr.peak td { background-color: #fff8ef; }
+.t7 th:first-child { background: #001740; color: #9fc0ff; }
+.t7 th { background: #fff; text-transform: uppercase; font-size: 10px; letter-spacing: .05em; }
+
+/* T8: totales con gradiente y cifras ámbar */
+.t8w { border: 1px solid #e6e9ef; border-radius: 10px; overflow: hidden; }
+.t8 th { background: #e8f0fd; color: #1c5cab; border-bottom: 1px solid #cfe1f8; text-transform: uppercase; font-size: 10px; letter-spacing: .05em; }
+.t8 td { border-bottom: 1px solid #f0f1f4; }
+.t8 .tot td { background: linear-gradient(90deg, #001740, #0a3a86); color: #ffd9a8; font-weight: 800; border-bottom: none; }
+.t8 .tot td:first-child { color: #fff; }
+.t8 tbody tr:not(.tot):hover td { background: #f0f6fe; }
+
+/* T9: dark premium con mini-barras ámbar */
+.t9card { background: linear-gradient(150deg, #001740 0%, #002b69 75%, #0a3a86 100%); border: none; }
+.t9card .chead { border-bottom-color: rgba(255,255,255,.15); }
+.t9card .chead h3 { color: #fff; }
+.t9card .chead p { color: #9fc0ff; }
+.t9 th { color: #9fc0ff; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; border-bottom: 1px solid rgba(255,255,255,.18); }
+.t9 td { color: #fff; border-bottom: 1px solid rgba(255,255,255,.09); }
+.t9 tr:last-child td { border-bottom: none; }
+.t9 tbody tr:hover td { background: rgba(255,255,255,.06); }
+.t9 .glow { color: #ffd9a8; }
+.t9 .db { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.t9 .db i { display: block; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #ffb454, #ffd9a8); }
+
+/* T10: heatmap por columna (intensidad = valor) */
+.t10w { border: 1.5px solid #dde1e8; border-radius: 10px; overflow: hidden; }
+.t10 th { background: #f4f6fa; border-bottom: 1.5px solid #dde1e8; border-right: 1px solid #e6e9ef; text-transform: uppercase; font-size: 10px; letter-spacing: .05em; }
+.t10 td { border-bottom: 1px solid #eceff3; border-right: 1px solid #eceff3; }
+.t10 th:last-child, .t10 td:last-child { border-right: none; }
+.t10 tr:last-child td { border-bottom: none; }
+.t10 .h1 { background: #f2f7fe; } .t10 .h2 { background: #dcebfb; } .t10 .h3 { background: #b9d7f6; }
+.t10 .h4 { background: #6da7ec; color: #fff; } .t10 .h5 { background: #1c5cab; color: #fff; }
+
+/* ===== NUEVAS PROPUESTAS T11–T20 (investigación 2025-26) ===== */
+.divider { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, transparent, #b9c4d8, transparent); }
+.divider span { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #42565E; }
+
+/* T11: ranking con medallas + data-bar */
+.t11 td { border-bottom: 1px solid #f0f1f4; }
+.t11 tr:last-child td { border-bottom: none; }
+.t11 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t11 .rk { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 11.5px; font-weight: 900; color: #fff; margin-right: 9px; vertical-align: middle; }
+.t11 .rk.g { background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 2px 6px -1px rgba(245,158,11,.55); }
+.t11 .rk.s { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.t11 .rk.b { background: linear-gradient(135deg, #b45309, #d97706); }
+.t11 .rk.n { background: #c9d3e2; color: #52627a; }
+.t11 .db { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.t11 .db i { display: block; height: 7px; border-radius: 4px; background: linear-gradient(90deg, #002b69, #3f83d9); }
+.t11 tr:first-child .db i { background: linear-gradient(90deg, #d97706, #fbbf24); }
+
+/* T12: variación con flechas verde/rojo */
+.t12 td { border-bottom: 1px solid #f0f1f4; }
+.t12 tr:last-child td { border-bottom: none; }
+.t12 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t12 .up, .t12 .dn, .t12 .eq { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+.t12 .up { background: #d1fae5; color: #047857; }
+.t12 .dn { background: #fee2e2; color: #b91c1c; }
+.t12 .eq { background: #eef1f5; color: #8a94a6; }
+
+/* T13: % del total con barra de progreso */
+.t13 td { border-bottom: 1px solid #f0f1f4; }
+.t13 tr:last-child td { border-bottom: none; }
+.t13 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t13 .pw { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.t13 .track { width: 74px; height: 8px; border-radius: 5px; background: #eceff3; overflow: hidden; }
+.t13 .track i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #2a78d6, #5598e7); }
+.t13 tr.peak .track i { background: linear-gradient(90deg, #bb0027, #eb6834); }
+.t13 .pct { font-size: 11.5px; font-weight: 800; color: #1c5cab; min-width: 42px; }
+.t13 tr.peak .pct { color: #bb0027; }
+
+/* T14: timeline vertical conectada */
+.t14 td { border-bottom: 1px solid #f2f4f7; }
+.t14 tr:last-child td { border-bottom: none; }
+.t14 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t14 td:first-child { position: relative; padding-left: 30px; }
+.t14 td:first-child::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, #86b6ef, #104281); }
+.t14 tr:first-child td:first-child::before { top: 50%; }
+.t14 tr:last-child td:first-child::before { bottom: 50%; }
+.t14 td:first-child::after { content: ''; position: absolute; left: 7px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--c, #2a78d6); box-shadow: 0 0 0 2.5px #fff, 0 0 0 4px var(--c, #2a78d6); }
+.t14 tr.p1 td:first-child { --c: #86b6ef; } .t14 tr.p2 td:first-child { --c: #5598e7; }
+.t14 tr.p3 td:first-child { --c: #eb6834; } .t14 tr.p3 td { background: #fff9f4; font-weight: 800; }
+.t14 tr.p4 td:first-child { --c: #1c5cab; } .t14 tr.p5 td:first-child { --c: #104281; }
+
+/* T15: blended column (dos niveles por fila) */
+.t15 td { border-bottom: 1px solid #f0f1f4; padding: 10px 11px; }
+.t15 tr:last-child td { border-bottom: none; }
+.t15 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t15 .per { font-weight: 800; font-size: 13px; color: #13242B; }
+.t15 .sub { display: block; font-size: 11px; font-weight: 600; color: #0f766e; margin-top: 1px; }
+.t15 .big { font-size: 19px; font-weight: 900; color: #002b69; }
+.t15 tr.peak .big { color: #bb0027; }
+.t15 .soles { color: #c2410c; font-weight: 800; }
+
+/* T16: barra 100% apilada + leyenda por fila */
+.t16stack { display: flex; height: 14px; border-radius: 7px; overflow: hidden; margin-bottom: 4px; }
+.t16stack i { display: block; height: 100%; }
+.t16cap { font-size: 10.5px; font-weight: 700; color: #6b7688; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.t16 td { border-bottom: 1px solid #f0f1f4; }
+.t16 tr:last-child td { border-bottom: none; }
+.t16 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t16 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: 0; }
+
+/* T17: glassmorphism aurora */
+.t17card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.6);
+  background:
+    radial-gradient(420px 260px at 88% -10%, rgba(187,0,39,.28), transparent 60%),
+    radial-gradient(500px 320px at -10% 30%, rgba(42,120,214,.38), transparent 60%),
+    radial-gradient(420px 300px at 60% 120%, rgba(109,40,217,.30), transparent 60%),
+    linear-gradient(135deg, #eef3fb, #e6ecf7); }
+.t17card .chead { border-bottom-color: rgba(255,255,255,.55); }
+.t17glass { background: rgba(255,255,255,.62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.75); border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px -12px rgba(16,24,40,.25); }
+.t17 th { background: rgba(255,255,255,.5); text-transform: uppercase; font-size: 10px; letter-spacing: .05em; color: #1c5cab; border-bottom: 1px solid rgba(255,255,255,.8); }
+.t17 td { border-bottom: 1px solid rgba(255,255,255,.65); }
+.t17 tr:last-child td { border-bottom: none; }
+.t17 tr.peak td { background: rgba(255,255,255,.55); color: #bb0027; font-weight: 800; }
+
+/* T18: cabecera aurora institucional */
+.t18w { border-radius: 10px; overflow: hidden; border: 1px solid #e6e9ef; }
+.t18 th { background: linear-gradient(100deg, #001740 0%, #1c5cab 55%, #bb0027 130%); color: #fff; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; padding: 10px 11px; }
+.t18 td { border-bottom: 1px solid #f0f1f4; }
+.t18 tr:last-child td { border-bottom: none; }
+.t18 tbody tr:hover td { background: #f5f8fd; }
+.t18 tr.peak td { font-weight: 800; background: linear-gradient(90deg, rgba(28,92,171,.08), rgba(187,0,39,.07)); }
+
+/* T19: semáforo de carga */
+.t19 td { border-bottom: 1px solid #f0f1f4; }
+.t19 tr:last-child td { border-bottom: none; }
+.t19 th { text-transform: uppercase; letter-spacing: .05em; font-size: 10px; border-bottom: 1.5px solid #dde1e8; }
+.t19 .tl { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+.t19 .tl.lo { background: #1baf7a; box-shadow: 0 0 0 3px rgba(27,175,122,.16); }
+.t19 .tl.md { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.16); }
+.t19 .tl.hi { background: #bb0027; box-shadow: 0 0 0 3px rgba(187,0,39,.16); }
+.t19 .n.lo { color: #0f8a5f; } .t19 .n.md { color: #b45309; } .t19 .n.hi { color: #bb0027; }
+.t19 .lvl { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; }
+.t19 .lvl.lo { background: #d1fae5; color: #047857; } .t19 .lvl.md { background: #fef3c7; color: #b45309; } .t19 .lvl.hi { background: #fee2e2; color: #b91c1c; }
+
+/* T20: editorial — cifras gigantes con gradiente */
+.t20 td { border-bottom: 1px solid #eef0f4; padding: 10px 11px; }
+.t20 tr:last-child td { border-bottom: none; }
+.t20 th { text-transform: uppercase; letter-spacing: .08em; font-size: 9.5px; color: #8a94a6; border-bottom: 2px solid #13242B; }
+.t20 .per { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #52627a; }
+.t20 .huge { font-size: 24px; font-weight: 900; line-height: 1; background: linear-gradient(135deg, var(--g1, #001740), var(--g2, #2a78d6)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.t20 tr.peak .huge { --g1: #bb0027; --g2: #eb6834; }
+.t20 .mut { font-weight: 600; color: #6b7688; }
+</style>
+</head>
+<body>
+<h1>Propuestas — Tabla "Proyección de reactivación"</h1>
+<p class="note">20 estilos con color aplicado donde aporta lectura: acento en el pico 2027, rampa azul por periodo, una tinta por métrica, heatmap, ranking, variación, timeline, glassmorphism y más — basados en patrones actuales de dashboards (Inforiver, Setproduct, Pencil &amp; Paper). Datos reales: Periodo · Obras · S/ mlls. · Población.</p>
+
+<div class="props">
+
+  <!-- T1 -->
+  <div>
+    <span class="prop-label">T<b>1</b> · Hairline + pico resaltado</span>
+    <p class="prop-desc">Limpia y silenciosa, pero con punto de color por periodo y la fila 2027 (el pico) bañada en naranja suave.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t1">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot p1"></span>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td><span class="dot p2"></span>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="peak"><td><span class="dot p3"></span>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td><span class="dot p4"></span>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td><span class="dot p5"></span>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T2 -->
+  <div>
+    <span class="prop-label">T<b>2</b> · Zebra azul</span>
+    <p class="prop-desc">Filas alternadas en dos tonos de azul con filete lateral #2a78d6 — el clásico zebra, pero con la paleta del dashboard.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t2">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T3 -->
+  <div>
+    <span class="prop-label">T<b>3</b> · Filas tarjeta con borde de color</span>
+    <p class="prop-desc">Cada fila es una mini-tarjeta con borde izquierdo en la rampa azul por periodo; 2027 en naranja con fondo cálido.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t3">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr class="r1"><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr class="r2"><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="r3"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr class="r4"><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr class="r5"><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T4 -->
+  <div>
+    <span class="prop-label">T<b>4</b> · Institucional navy + rojo</span>
+    <p class="prop-desc">Cabecera azul marino con degradado y franja superior roja MVCS (#bb0027); el pico 2027 en celeste institucional.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t4w">
+      <table class="t4">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="peak"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- T5 -->
+  <div>
+    <span class="prop-label">T<b>5</b> · Data-bars multicolor</span>
+    <p class="prop-desc">Cada métrica con su tinta: Obras en azul, S/ en naranja, Población en verde-azulado. Tabla y gráfico en uno.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t5">
+        <thead><tr><th>Periodo</th><th class="h-obras">Obras</th><th class="h-soles">S/ mlls.</th><th class="h-pob">Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td><span class="db obras"><i style="width:5px"></i>7</span></td><td><span class="db soles"><i style="width:5px"></i>454</span></td><td><span class="db pob"><i style="width:3px"></i>83,189</span></td></tr>
+          <tr><td>IV Trim 2026</td><td><span class="db obras"><i style="width:11px"></i>21</span></td><td><span class="db soles"><i style="width:8px"></i>764</span></td><td><span class="db pob"><i style="width:12px"></i>438,181</span></td></tr>
+          <tr><td>2027</td><td><span class="db obras"><i style="width:54px"></i>104</span></td><td><span class="db soles"><i style="width:54px"></i>5,536</span></td><td><span class="db pob"><i style="width:54px"></i>2,116,028</span></td></tr>
+          <tr><td>2028</td><td><span class="db obras"><i style="width:26px"></i>49</span></td><td><span class="db soles"><i style="width:6px"></i>563</span></td><td><span class="db pob"><i style="width:4px"></i>143,821</span></td></tr>
+          <tr><td>2029</td><td><span class="db obras"><i style="width:32px"></i>62</span></td><td><span class="db soles"><i style="width:12px"></i>1,233</span></td><td><span class="db pob"><i style="width:49px"></i>1,919,886</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T6 -->
+  <div>
+    <span class="prop-label">T<b>6</b> · Chips de color por periodo</span>
+    <p class="prop-desc">Cada periodo con su chip de color; el pico 2027 en degradado rojo→naranja con sombra — el más llamativo.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t6">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip c1">III Trim 26</span></td><td class="num">7</td><td>454</td><td>83,189</td></tr>
+          <tr><td><span class="chip c2">IV Trim 26</span></td><td class="num">21</td><td>764</td><td>438,181</td></tr>
+          <tr><td><span class="chip hot">2027</span></td><td class="num">104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td><span class="chip c4">2028</span></td><td class="num">49</td><td>563</td><td>143,821</td></tr>
+          <tr><td><span class="chip c5">2029</span></td><td class="num">62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T7 -->
+  <div>
+    <span class="prop-label">T<b>7</b> · Columna periodo en navy</span>
+    <p class="prop-desc">La columna Periodo en degradado azul marino con texto blanco (2027 en ámbar) — ancla fuerte y muy institucional.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t7w">
+      <table class="t7">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="peak"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- T8 -->
+  <div>
+    <span class="prop-label">T<b>8</b> · Totales en navy + ámbar</span>
+    <p class="prop-desc">Cabecera celeste y fila TOTAL en degradado navy con cifras ámbar: 243 obras · S/ 8,549 · 4.7M hab.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t8w">
+      <table class="t8">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+          <tr class="tot"><td>Total</td><td>243</td><td>8,549</td><td>4,701,105</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- T9 -->
+  <div>
+    <span class="prop-label">T<b>9</b> · Dark premium + barras ámbar</span>
+    <p class="prop-desc">Tarjeta completa en azul marino con mini-barras ámbar en Obras — hace pareja con el KPI héroe del dashboard.</p>
+    <div class="card t9card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t9">
+        <thead><tr><th>Periodo</th><th style="text-align:right">Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td><span class="db"><i style="width:5px"></i>7</span></td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td><span class="db"><i style="width:12px"></i>21</span></td><td>764</td><td>438,181</td></tr>
+          <tr><td class="glow">2027</td><td><span class="db glow"><i style="width:58px"></i>104</span></td><td class="glow">5,536</td><td class="glow">2,116,028</td></tr>
+          <tr><td>2028</td><td><span class="db"><i style="width:28px"></i>49</span></td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td><span class="db"><i style="width:35px"></i>62</span></td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T10 -->
+  <div>
+    <span class="prop-label">T<b>10</b> · Heatmap de intensidad</span>
+    <p class="prop-desc">Cada celda teñida según su magnitud dentro de la columna (rampa azul del dashboard) — se ve el pico de un vistazo.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t10w">
+      <table class="t10">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td class="h1">7</td><td class="h1">454</td><td class="h1">83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td class="h2">21</td><td class="h2">764</td><td class="h2">438,181</td></tr>
+          <tr><td>2027</td><td class="h5">104</td><td class="h5">5,536</td><td class="h5">2,116,028</td></tr>
+          <tr><td>2028</td><td class="h3">49</td><td class="h1">563</td><td class="h1">143,821</td></tr>
+          <tr><td>2029</td><td class="h3">62</td><td class="h2">1,233</td><td class="h4">1,919,886</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>Nuevas propuestas · patrones 2025–2026</span></div>
+
+  <!-- T11 -->
+  <div>
+    <span class="prop-label">T<b>11</b> · Ranking con medallas</span>
+    <p class="prop-desc">Ordenada de mayor a menor con medalla oro/plata/bronce y barra proporcional — patrón "ranked list" de reportes ejecutivos.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>periodos ordenados por N° de obras</p></div>
+      <table class="t11">
+        <thead><tr><th>Periodo</th><th style="text-align:right">Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rk g">1</span>2027</td><td><span class="db"><i style="width:60px"></i>104</span></td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td><span class="rk s">2</span>2029</td><td><span class="db"><i style="width:36px"></i>62</span></td><td>1,233</td><td>1,919,886</td></tr>
+          <tr><td><span class="rk b">3</span>2028</td><td><span class="db"><i style="width:28px"></i>49</span></td><td>563</td><td>143,821</td></tr>
+          <tr><td><span class="rk n">4</span>IV Trim 2026</td><td><span class="db"><i style="width:12px"></i>21</span></td><td>764</td><td>438,181</td></tr>
+          <tr><td><span class="rk n">5</span>III Trim 2026</td><td><span class="db"><i style="width:4px"></i>7</span></td><td>454</td><td>83,189</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T12 -->
+  <div>
+    <span class="prop-label">T<b>12</b> · Variación con flechas</span>
+    <p class="prop-desc">Columna Δ con píldoras verde/rojo mostrando el cambio de obras vs. el periodo anterior — patrón "arrow alerts".</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t12">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>Δ vs ant.</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td><span class="eq">—</span></td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td><span class="up">▲ +14</span></td><td>764</td><td>438,181</td></tr>
+          <tr><td>2027</td><td>104</td><td><span class="up">▲ +83</span></td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td><span class="dn">▼ −55</span></td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td><span class="up">▲ +13</span></td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T13 -->
+  <div>
+    <span class="prop-label">T<b>13</b> · % del total con progreso</span>
+    <p class="prop-desc">Cada periodo muestra su peso sobre las 243 obras con barra de progreso; el pico 2027 (43%) en rojo→naranja.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>participación sobre 243 obras totales</p></div>
+      <table class="t13">
+        <thead><tr><th>Periodo</th><th>Obras</th><th style="text-align:right">% del total</th><th>S/ mlls.</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td><span class="pw"><span class="track"><i style="width:3%"></i></span><span class="pct">2.9%</span></span></td><td>454</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td><span class="pw"><span class="track"><i style="width:9%"></i></span><span class="pct">8.6%</span></span></td><td>764</td></tr>
+          <tr class="peak"><td>2027</td><td>104</td><td><span class="pw"><span class="track"><i style="width:43%"></i></span><span class="pct">42.8%</span></span></td><td>5,536</td></tr>
+          <tr><td>2028</td><td>49</td><td><span class="pw"><span class="track"><i style="width:20%"></i></span><span class="pct">20.2%</span></span></td><td>563</td></tr>
+          <tr><td>2029</td><td>62</td><td><span class="pw"><span class="track"><i style="width:26%"></i></span><span class="pct">25.5%</span></span></td><td>1,233</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T14 -->
+  <div>
+    <span class="prop-label">T<b>14</b> · Timeline conectada</span>
+    <p class="prop-desc">Los periodos como hitos de una línea de tiempo vertical con nodos de color — refuerza que es una proyección en el tiempo.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>ruta de reactivación 2026 → 2029</p></div>
+      <table class="t14">
+        <thead><tr><th style="padding-left:30px">Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr class="p1"><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr class="p2"><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="p3"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr class="p4"><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr class="p5"><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T15 -->
+  <div>
+    <span class="prop-label">T<b>15</b> · Columna blended</span>
+    <p class="prop-desc">Dos niveles por fila: el periodo con la población beneficiada como subtexto verde, y Obras como cifra grande — patrón "blended column".</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t15">
+        <thead><tr><th>Periodo · Población</th><th>Obras</th><th>S/ mlls.</th></tr></thead>
+        <tbody>
+          <tr><td><span class="per">III Trim 2026</span><span class="sub">83,189 hab. beneficiados</span></td><td><span class="big">7</span></td><td class="soles">454</td></tr>
+          <tr><td><span class="per">IV Trim 2026</span><span class="sub">438,181 hab. beneficiados</span></td><td><span class="big">21</span></td><td class="soles">764</td></tr>
+          <tr class="peak"><td><span class="per">2027</span><span class="sub">2,116,028 hab. beneficiados</span></td><td><span class="big">104</span></td><td class="soles">5,536</td></tr>
+          <tr><td><span class="per">2028</span><span class="sub">143,821 hab. beneficiados</span></td><td><span class="big">49</span></td><td class="soles">563</td></tr>
+          <tr><td><span class="per">2029</span><span class="sub">1,919,886 hab. beneficiados</span></td><td><span class="big">62</span></td><td class="soles">1,233</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T16 -->
+  <div>
+    <span class="prop-label">T<b>16</b> · Barra apilada + leyenda</span>
+    <p class="prop-desc">Una barra 100% apilada resume la distribución arriba; cada fila lleva su swatch de color como leyenda viva.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div>
+        <p class="t16cap">Distribución de 243 obras</p>
+        <div class="t16stack">
+          <i style="width:2.9%; background:#86b6ef"></i>
+          <i style="width:8.6%; background:#5598e7"></i>
+          <i style="width:42.8%; background:#eb6834"></i>
+          <i style="width:20.2%; background:#1c5cab"></i>
+          <i style="width:25.5%; background:#104281"></i>
+        </div>
+      </div>
+      <table class="t16">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw" style="background:#86b6ef"></span>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td><span class="sw" style="background:#5598e7"></span>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr><td><span class="sw" style="background:#eb6834"></span>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td><span class="sw" style="background:#1c5cab"></span>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td><span class="sw" style="background:#104281"></span>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T17 -->
+  <div>
+    <span class="prop-label">T<b>17</b> · Glassmorphism aurora</span>
+    <p class="prop-desc">Tarjeta con manchas de gradiente azul/rojo/violeta y la tabla sobre vidrio esmerilado — la tendencia visual del momento.</p>
+    <div class="card t17card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t17glass">
+      <table class="t17">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="peak"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- T18 -->
+  <div>
+    <span class="prop-label">T<b>18</b> · Cabecera aurora</span>
+    <p class="prop-desc">Cabecera con gradiente navy→azul→rojo institucional y filas limpias; el pico con un lavado sutil del mismo gradiente.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <div class="t18w">
+      <table class="t18">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td>III Trim 2026</td><td>7</td><td>454</td><td>83,189</td></tr>
+          <tr><td>IV Trim 2026</td><td>21</td><td>764</td><td>438,181</td></tr>
+          <tr class="peak"><td>2027</td><td>104</td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td>2028</td><td>49</td><td>563</td><td>143,821</td></tr>
+          <tr><td>2029</td><td>62</td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- T19 -->
+  <div>
+    <span class="prop-label">T<b>19</b> · Semáforo de carga</span>
+    <p class="prop-desc">Semáforo por intensidad de carga: verde (baja), ámbar (media), rojo (pico) con etiqueta de nivel — patrón "traffic lights".</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>carga de obras por periodo</p></div>
+      <table class="t19">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>Carga</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tl lo"></span>III Trim 2026</td><td class="n lo">7</td><td><span class="lvl lo">Baja</span></td><td>454</td><td>83,189</td></tr>
+          <tr><td><span class="tl lo"></span>IV Trim 2026</td><td class="n lo">21</td><td><span class="lvl lo">Baja</span></td><td>764</td><td>438,181</td></tr>
+          <tr><td><span class="tl hi"></span>2027</td><td class="n hi">104</td><td><span class="lvl hi">Pico</span></td><td>5,536</td><td>2,116,028</td></tr>
+          <tr><td><span class="tl md"></span>2028</td><td class="n md">49</td><td><span class="lvl md">Media</span></td><td>563</td><td>143,821</td></tr>
+          <tr><td><span class="tl md"></span>2029</td><td class="n md">62</td><td><span class="lvl md">Media</span></td><td>1,233</td><td>1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- T20 -->
+  <div>
+    <span class="prop-label">T<b>20</b> · Editorial cifras gigantes</span>
+    <p class="prop-desc">Obras en tipografía enorme con gradiente de texto (navy→azul; el pico rojo→naranja) — estilo revista/reporte anual.</p>
+    <div class="card"><div class="chead"><h3>Proyección de reactivación</h3><p>obras programadas por periodo</p></div>
+      <table class="t20">
+        <thead><tr><th>Periodo</th><th>Obras</th><th>S/ mlls.</th><th>Población</th></tr></thead>
+        <tbody>
+          <tr><td class="per">III Trim 2026</td><td><span class="huge">7</span></td><td class="mut">454</td><td class="mut">83,189</td></tr>
+          <tr><td class="per">IV Trim 2026</td><td><span class="huge">21</span></td><td class="mut">764</td><td class="mut">438,181</td></tr>
+          <tr class="peak"><td class="per">2027</td><td><span class="huge">104</span></td><td class="mut">5,536</td><td class="mut">2,116,028</td></tr>
+          <tr><td class="per">2028</td><td><span class="huge">49</span></td><td class="mut">563</td><td class="mut">143,821</td></tr>
+          <tr><td class="per">2029</td><td><span class="huge">62</span></td><td class="mut">1,233</td><td class="mut">1,919,886</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
